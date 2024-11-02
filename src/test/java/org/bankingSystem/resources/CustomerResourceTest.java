@@ -3,35 +3,37 @@ package org.bankingSystem.resources;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+
 class CustomerResourceTest {
 
 
     @Test
-    void getCustomers() {
+    void getCustomers() throws SQLException {
         Response response = new CustomerResource().getCustomers();
         System.out.println(response.getEntity());
     }
 
     @Test
-    void getCustomerById() {
+    void getCustomerById() throws SQLException {
         Response response = new CustomerResource().getCustomerById(1);
         System.out.println(response.getEntity());
     }
 
     @Test
-    void getCustomersAccounts() {
+    void getCustomersAccounts() throws SQLException {
         Response response = new CustomerResource().getCustomersAccounts();
         System.out.println(response.getEntity());
     }
 
     @Test
-    void getCustomerAccountsById() {
+    void getCustomerAccountsById() throws SQLException {
         Response response = new CustomerResource().getCustomerAccountsById(1);
         System.out.println(response.getEntity());
     }
 
     @Test
-    void createCustomer() {
+    void createCustomer() throws SQLException {
         String payload = "{\n" +
                 "  \"customerFirstName\": \"Jack\",\n" +
                 "  \"customerLastName\": \"House\",\n" +
@@ -46,7 +48,7 @@ class CustomerResourceTest {
     }
 
     @Test
-    void updateCustomerById() {
+    void updateCustomerById() throws SQLException {
         String payload = "{\n" +
                 "  \"customerFirstName\": \"Jack\",\n" +
                 "  \"customerLastName\": \"House\",\n" +
@@ -60,7 +62,7 @@ class CustomerResourceTest {
     }
 
     @Test
-    void updateCustomerAddressById() {
+    void updateCustomerAddressById() throws SQLException {
         String payload = "{\n" +
                 "  \"customerAddress\": \"South Jersey, 203 B2\"\n" +
                 "}";
@@ -69,37 +71,37 @@ class CustomerResourceTest {
     }
 
     @Test
-    void deleteCustomerById() {
+    void deleteCustomerById() throws SQLException {
         Response response = new CustomerResource().deleteCustomerById(5);
         System.out.println(response.getEntity());
     }
 
     @Test
-    void getCustomerAccountsTransactionsById() {
+    void getCustomerAccountsTransactionsById() throws SQLException {
         Response response = new CustomerResource().getCustomerAccountsTransactionsById(1);
         System.out.println(response.getEntity());
     }
 
     @Test
-    void getCustomersAccountsTransactions() {
+    void getCustomersAccountsTransactions() throws SQLException {
         Response response = new CustomerResource().getCustomersAccountsTransactions();
         System.out.println(response.getEntity());
     }
 
     @Test
-    void getCustomerAccountsCardsById() {
+    void getCustomerAccountsCardsById() throws SQLException {
         Response response = new CustomerResource().getCustomerAccountsCardsById(1);
         System.out.println(response.getEntity());
     }
 
     @Test
-    void getCustomersAccountsCards() {
+    void getCustomersAccountsCards() throws SQLException {
         Response response = new CustomerResource().getCustomersAccountsCards();
         System.out.println(response.getEntity());
     }
 
     @Test
-    void getCustomerFirstNameById() {
+    void getCustomerFirstNameById() throws SQLException {
         Response response = new CustomerResource().getCustomerFirstNameById(1);
         System.out.println(response.getEntity());
     }

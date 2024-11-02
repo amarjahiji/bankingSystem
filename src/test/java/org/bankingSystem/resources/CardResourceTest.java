@@ -3,35 +3,37 @@ package org.bankingSystem.resources;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+
 
 class CardResourceTest {
 
     @Test
-    void getCards() {
+    void getCards() throws SQLException {
         Response response = new CardResource().getCards();
         System.out.println(response.getEntity());
     }
 
     @Test
-    void getCardById() {
+    void getCardById() throws SQLException {
         Response response = new CardResource().getCardById(1);
         System.out.println(response.getEntity());
     }
 
     @Test
-    void getCardsCardType() {
+    void getCardsCardType() throws SQLException {
         Response response = new CardResource().getCardsCardType();
         System.out.println(response.getEntity());
     }
 
     @Test
-    void getCardCardType() {
+    void getCardCardType() throws SQLException {
         Response response = new CardResource().getCardCardTypeById(1);
         System.out.println(response.getEntity());
     }
 
     @Test
-    void createCard() {
+    void createCard() throws SQLException {
         String payload = "{\n"
                 + "  \"cardNumber\": \"1233217863748916\",\n"
                 + "  \"cardExpiryDate\": \"2028-08-08\",\n"
@@ -45,7 +47,7 @@ class CardResourceTest {
     }
 
     @Test
-    void updateCardById() {
+    void updateCardById() throws SQLException {
         String payload = "{\n" +
                 "  \"cardNumber\": \"1223417863748916\",\n" +
                 "  \"cardExpiryDate\": \"2028-08-08\",\n" +
@@ -59,7 +61,7 @@ class CardResourceTest {
     }
 
     @Test
-    void updateCardExpiryDateById() {
+    void updateCardExpiryDateById() throws SQLException {
         String payload = "{\n" +
                 "  \"cardExpiryDate\": \"2028-02-02\"\n" +
                 "}";
@@ -68,7 +70,7 @@ class CardResourceTest {
     }
 
     @Test
-    void deleteCardById() {
+    void deleteCardById() throws SQLException {
         Response response = new CardResource().deleteCardById(9);
         System.out.println(response.getEntity());
     }

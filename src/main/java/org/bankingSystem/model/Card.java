@@ -6,27 +6,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Card {
-    private int cardId;
+    private Integer cardId;
     private String cardNumber;
     private String cardExpiryDate;
     private String cardHolderName;
     private String cardCvv;
-    private int cardTypeId;
-    private int accountId;
-    private List<CardType> cardType = new ArrayList<>();
+    private Integer cardTypeId;
+    private Integer accountId;
+    private List<CardType> cardType;
 
 
     public Card() {
     }
 
     public Card(ResultSet resultSet) throws SQLException {
-        this.cardId = resultSet.getInt("CARD_ID");
-        this.cardNumber = resultSet.getString("CARD_NUMBER");
-        this.cardExpiryDate = resultSet.getString("CARD_EXPIRY_DATE");
-        this.cardHolderName = resultSet.getString("CARD_HOLDER_NAME");
-        this.cardCvv = resultSet.getString("CARD_CVV");
-        this.cardTypeId = resultSet.getInt("CARD_TYPE_ID");
-        this.accountId = resultSet.getInt("ACCOUNT_ID");
+        this.cardId = resultSet.getInt("card_id");
+        this.cardNumber = resultSet.getString("card_number");
+        this.cardExpiryDate = resultSet.getString("card_expiry_date");
+        this.cardHolderName = resultSet.getString("card_holder_name");
+        this.cardCvv = resultSet.getString("card_cvv");
+        this.cardTypeId = resultSet.getInt("card_type_id");
+        this.accountId = resultSet.getInt("account_id");
     }
 
     public Card(List<CardType> cardType) {
@@ -36,11 +36,11 @@ public class Card {
         this.cardType = new ArrayList<>();
     }
 
-    public int getCardId() {
+    public Integer getCardId() {
         return cardId;
     }
 
-    public void setCardId(int cardId) {
+    public void setCardId(Integer cardId) {
         this.cardId = cardId;
     }
 
@@ -76,15 +76,15 @@ public class Card {
         this.cardCvv = cardCvv;
     }
 
-    public int getCardTypeId() {
+    public Integer getCardTypeId() {
         return cardTypeId;
     }
 
-    public void setCardTypeId(int cardTypeId) {
+    public void setCardTypeId(Integer cardTypeId) {
         this.cardTypeId = cardTypeId;
     }
 
-    public int getAccountId() {
+    public Integer getAccountId() {
         return accountId;
     }
 
@@ -93,10 +93,17 @@ public class Card {
     }
 
     public List<CardType> getCardType() {
+        if (cardType == null) {
+            cardType = new ArrayList<>();
+        }
         return cardType;
     }
 
-    public void setAccount(List<CardType> cardType) {
-        this.cardType = cardType;
+    public void addCardType(CardType cardType) {
+        getCardType().add(cardType);
     }
+
+    public void setCardType(List<CardType> cardType) {
+            this.cardType = cardType;
+        }
 }

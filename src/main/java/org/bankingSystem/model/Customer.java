@@ -6,26 +6,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Customer {
-    private int customerId;
+    private Integer customerId;
     private String customerFirstName;
     private String customerLastName;
     private String customerDateOfBirth;
     private String customerEmail;
     private String customerPhoneNumber;
     private String customerAddress;
-    private List<Account> account = new ArrayList<>();
-
-    public Customer() {
-    }
+    private List<Account> accounts;
 
     public Customer(ResultSet resultSet) throws SQLException {
-        this.customerId = resultSet.getInt("CUSTOMER_ID");
-        this.customerFirstName = resultSet.getString("CUSTOMER_FIRST_NAME");
-        this.customerLastName = resultSet.getString("CUSTOMER_LAST_NAME");
-        this.customerDateOfBirth = resultSet.getString("CUSTOMER_DATE_OF_BIRTH");
-        this.customerEmail = resultSet.getString("CUSTOMER_EMAIL");
-        this.customerPhoneNumber = resultSet.getString("CUSTOMER_PHONE_NUMBER");
-        this.customerAddress = resultSet.getString("CUSTOMER_ADDRESS");
+        this.customerId = resultSet.getInt("customer_id");
+        this.customerFirstName = resultSet.getString("customer_first_name");
+        this.customerLastName = resultSet.getString("customer_last_name");
+        this.customerDateOfBirth = resultSet.getString("customer_date_of_birth");
+        this.customerEmail = resultSet.getString("customer_email");
+        this.customerPhoneNumber = resultSet.getString("customer_phone_number");
+        this.customerAddress = resultSet.getString("customer_address");
+        this.accounts = null;
     }
 
     public int getCustomerId() {
@@ -85,10 +83,17 @@ public class Customer {
     }
 
     public List<Account> getAccount() {
-        return account;
+        if (accounts == null) {
+            accounts = new ArrayList<>();
+        }
+        return accounts;
     }
 
-    public void setAccount(List<Account> account) {
-        this.account = account;
+    public void addAccount(Account account) {
+        getAccount().add(account);
+    }
+
+    public void setAccounts(List<Account> accounts) {
+        this.accounts = accounts;
     }
 }

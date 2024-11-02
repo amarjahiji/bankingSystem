@@ -6,29 +6,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Transaction {
-    private int transactionId;
+    private Integer transactionId;
     private String transactionType;
-    private float transactionAmount;
+    private Float transactionAmount;
     private String transactionDate;
-    private int accountId;
+    private Integer accountId;
     private List<CardType> cardType = new ArrayList<>();
 
-    public Transaction() {
-    }
-
     public Transaction(ResultSet resultSet) throws SQLException {
-        this.transactionId = resultSet.getInt("TRANSACTION_ID");
-        this.transactionType = resultSet.getString("TRANSACTION_TYPE");
-        this.transactionAmount = resultSet.getFloat("TRANSACTION_AMOUNT");
-        this.transactionDate = resultSet.getString("TRANSACTION_DATE");
-        this.accountId = resultSet.getInt("ACCOUNT_ID");
+        this.transactionId = resultSet.getInt("transaction_id");
+        this.transactionType = resultSet.getString("transaction_type");
+        this.transactionAmount = resultSet.getFloat("transaction_amount");
+        this.transactionDate = resultSet.getString("transaction_date");
+        this.accountId = resultSet.getInt("account_id");
     }
 
-    public int getTransactionId() {
+    public Integer getTransactionId() {
         return transactionId;
     }
 
-    public void setTransactionId(int transactionId) {
+    public void setTransactionId(Integer transactionId) {
         this.transactionId = transactionId;
     }
 
@@ -40,11 +37,11 @@ public class Transaction {
         this.transactionType = transactionType;
     }
 
-    public float getTransactionAmount() {
+    public Float getTransactionAmount() {
         return transactionAmount;
     }
 
-    public void setTransactionAmount(float transactionAmount) {
+    public void setTransactionAmount(Float transactionAmount) {
         this.transactionAmount = transactionAmount;
     }
 
@@ -56,11 +53,11 @@ public class Transaction {
         this.transactionDate = transactionDate;
     }
 
-    public int getAccountId() {
+    public Integer getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(int accountId) {
+    public void setAccountId(Integer accountId) {
         this.accountId = accountId;
     }
 }

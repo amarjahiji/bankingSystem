@@ -3,22 +3,24 @@ package org.bankingSystem.resources;
 import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
+import java.sql.SQLException;
+
 class AccountResourceTest {
 
     @Test
-    void getAccounts() {
+    void getAccounts() throws SQLException {
         Response response = new AccountResource().getAccounts();
         System.out.println(response.getEntity());
     }
 
     @Test
-    void getAccountById() {
+    void getAccountById() throws SQLException {
         Response response = new AccountResource().getAccountById(1);
         System.out.println(response.getEntity());
     }
 
     @Test
-    void createAccount() {
+    void createAccount() throws SQLException {
         String payload = "{\n" +
                 "    \"accountNumber\": \"1234760912763907\",\n" +
                 "    \"accountType\": \"Savings\",\n" +
@@ -33,7 +35,7 @@ class AccountResourceTest {
     }
 
     @Test
-    void updateAccountById() {
+    void updateAccountById() throws SQLException {
         String payload = "{\n" +
                 "    \"accountNumber\": \"1234760911113907\",\n" +
                 "    \"accountType\": \"Savings\",\n" +
@@ -48,22 +50,22 @@ class AccountResourceTest {
     }
 
     @Test
-    void updateAccountDateClosedById() {
+    void updateAccountDateClosedById() throws SQLException {
         String payload = "{\n" +
-                "  \"accountDateClosedById\": \"2022-0202\"\n" +
+                "  \"accountDateClosedById\": \"2022-02-02\"\n" +
                 "}";
         Response response = new AccountResource().updateAccountDateClosedById(3, payload);
         System.out.println(response.getEntity());
     }
 
     @Test
-    void deleteAccountById() {
+    void deleteAccountById() throws SQLException {
         Response response = new AccountResource().deleteAccountById(10);
         System.out.println(response.getEntity());
     }
 
     @Test
-    void getAccountNumberById() {
+    void getAccountNumberById() throws SQLException {
         Response response = new AccountResource().getAccountNumberById(9);
         System.out.println(response.getEntity());
     }

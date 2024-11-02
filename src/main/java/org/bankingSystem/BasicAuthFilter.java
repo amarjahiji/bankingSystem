@@ -4,8 +4,13 @@ import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.Provider;
+import org.bankingSystem.queries.AdminSqlQueries;
 import org.glassfish.jersey.http.HttpHeaders;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Base64;
 import java.util.StringTokenizer;
 
@@ -24,12 +29,25 @@ public class BasicAuthFilter implements ContainerRequestFilter {
                 StringTokenizer tokenizer = new StringTokenizer(decodedCredentials, ":");
                 String username = tokenizer.nextToken();
                 String password = tokenizer.nextToken();
-                if ("admin".equals(username) && "password".equals(password)) {
-                    return;
-                }
+                if (checkDb(username, password)) {return;}
             }
-            Response unauthorizedStatus = Response.status(Response.Status.UNAUTHORIZED).entity("User cannot access the resource.").build();
+            Response unauthorizedStatus = Response.status(Response.Status.UNAUTHORIZED)
+                    .entity("User cannot access the resource.")
+                    .build();
             requestContext.abortWith(unauthorizedStatus);
+        }
+    }
+
+    private boolean checkDb(String username, String password) {
+        try (Connection connection = DatabaseConnector.getConnection()) {
+            PreparedStatement ps = connection.prepareStatement(AdminSqlQueries.GET_ADMINS);
+            ps.setString(1, username);
+            ps.setString(2, password);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            System.out.println("Admin does not exist");
+            throw new RuntimeException(e);
         }
     }
 }

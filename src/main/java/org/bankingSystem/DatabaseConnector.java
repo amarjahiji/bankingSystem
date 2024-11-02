@@ -8,14 +8,14 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 public class DatabaseConnector {
-    public static final DataSource dataSource;
+    public static final DataSource DATA_SOURCE;
 
     static {
         HikariConfig config = new HikariConfig("/hikari.properties");
-        dataSource = new HikariDataSource(config);
+        DATA_SOURCE = new HikariDataSource(config);
     }
 
     public static Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+        return DATA_SOURCE.getConnection();
     }
 }

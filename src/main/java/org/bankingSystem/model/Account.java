@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Account {
-    private int accountId;
+    private Integer accountId;
     private String accountNumber;
     private String accountType;
     private Double accountCurrentBalance;
@@ -14,29 +14,28 @@ public class Account {
     private String accountDateClosed;
     private String accountStatus;
     private Integer customerId;
-    private List<Transaction> transactions = new ArrayList<>();
-    private List<Card> cards = new ArrayList<>();
-
-    public Account() {
-    }
+    private List<Transaction> transactions;
+    private List<Card> cards;
 
     public Account(ResultSet resultSet) throws SQLException {
-        this.accountId = resultSet.getInt("ACCOUNT_ID");
-        this.accountNumber = resultSet.getString("ACCOUNT_NUMBER");
-        this.accountType = resultSet.getString("ACCOUNT_TYPE");
-        this.accountCurrentBalance = resultSet.getDouble("ACCOUNT_CURRENT_BALANCE");
-        this.accountDateOpened = resultSet.getString("ACCOUNT_DATE_OPENED");
-        this.accountDateClosed = resultSet.getString("ACCOUNT_DATE_CLOSED");
-        this.accountStatus = resultSet.getString("ACCOUNT_STATUS");
-        this.customerId = resultSet.getInt("CUSTOMER_ID");
+        this.accountId = resultSet.getInt("account_id");
+        this.accountNumber = resultSet.getString("account_number");
+        this.accountType = resultSet.getString("account_type");
+        this.accountCurrentBalance = resultSet.getDouble("account_current_balance");
+        this.accountDateOpened = resultSet.getString("account_date_opened");
+        this.accountDateClosed = resultSet.getString("account_date_closed");
+        this.accountStatus = resultSet.getString("account_status");
+        this.customerId = resultSet.getInt("customer_id");
+        this.transactions = null;
+        this.cards = null;
     }
 
     public int getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(int id) {
-        this.accountId = id;
+    public void setAccountId(Integer accountId) {
+        this.accountId = accountId;
     }
 
     public String getAccountNumber() {
@@ -59,24 +58,24 @@ public class Account {
         return accountCurrentBalance;
     }
 
-    public void setAccountCurrentBalance(Double currentBalance) {
-        this.accountCurrentBalance = currentBalance;
+    public void setAccountCurrentBalance(Double accountCurrentBalance) {
+        this.accountCurrentBalance = accountCurrentBalance;
     }
 
     public String getAccountDateOpened() {
         return accountDateOpened;
     }
 
-    public void setAccountDateOpened(String dateOpened) {
-        this.accountDateOpened = dateOpened;
+    public void setAccountDateOpened(String accountDateOpened) {
+        this.accountDateOpened = accountDateOpened;
     }
 
     public String getAccountDateClosed() {
         return accountDateClosed;
     }
 
-    public void setAccountDateClosed(String dateClosed) {
-        this.accountDateClosed = dateClosed;
+    public void setAccountDateClosed(String accountDateClosed) {
+        this.accountDateClosed = accountDateClosed;
     }
 
     public String getAccountStatus() {
@@ -96,7 +95,14 @@ public class Account {
     }
 
     public List<Transaction> getTransactions() {
+        if (transactions == null) {
+            transactions = new ArrayList<>();
+        }
         return transactions;
+    }
+
+    public void addTransaction(Transaction transaction) {
+        getTransactions().add(transaction);
     }
 
     public void setTransaction(List<Transaction> transactions) {
@@ -104,7 +110,14 @@ public class Account {
     }
 
     public List<Card> getCards() {
+        if (cards == null) {
+            cards = new ArrayList<>();
+        }
         return cards;
+    }
+
+    public void addCards(Card card) {
+        getCards().add(card);
     }
 
     public void setCards(List<Card> cards) {

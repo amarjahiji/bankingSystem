@@ -4,15 +4,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class CardType {
-    private int cardTypeId;
+    private Integer cardTypeId;
     private String cardTypeName;
 
-    public CardType() {
-    }
-
     public CardType(ResultSet resultSet) throws SQLException {
-        this.cardTypeId = resultSet.getInt("CARD_TYPE_ID");
-        this.cardTypeName = resultSet.getString("CARD_TYPE_NAME");
+        this.cardTypeId = resultSet.getInt("card_type_id");
+        this.cardTypeName = resultSet.getString("card_type_name");
     }
 
     public void setCardTypeId(int cardTypeId) {

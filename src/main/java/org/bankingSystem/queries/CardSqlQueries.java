@@ -3,49 +3,81 @@ package org.bankingSystem.queries;
 public class CardSqlQueries {
 
     public static final String GET_CARDS =
-            "SELECT * FROM CARD";
+            "select id as card_id, " +
+                    "card_number, " +
+                    "card_expiry_date, " +
+                    "card_holder_name, " +
+                    "card_cvv, " +
+                    "card_type_id, " +
+                    "account_id " +
+                    "from cards";
 
     public static final String GET_CARD_BY_ID =
-            "SELECT * FROM CARD " +
-                    "WHERE CARD_ID = ?";
+            "select id as card_id, " +
+                    "card_number, " +
+                    "card_expiry_date, " +
+                    "card_holder_name, " +
+                    "card_cvv, " +
+                    "card_type_id, " +
+                    "account_id " +
+                    "from cards " +
+                    "where id = ?";
 
     public static final String GET_CARDS_CARD_TYPE =
-            "SELECT * FROM CARD c " +
-                    "LEFT JOIN CARD_TYPE ct " +
-                    "ON c.CARD_ID = ct.CARD_TYPE_ID";
+            "select c.id as card_id, " +
+                    "c.card_number, " +
+                    "c.card_holder_name, " +
+                    "c.card_cvv, " +
+                    "ct.card_type_name, " +
+                    "c.card_expiry_date, " +
+                    "c.card_type_id, " +
+                    "c.account_id, " +
+                    "ct.id as card_type_id " +
+                    "from cards c " +
+                    "left join card_types ct " +
+                    "on c.card_type_id = ct.id";
 
     public static final String GET_CARD_CARD_TYPE_BY_ID =
-            "SELECT * FROM CARD c " +
-                    "LEFT JOIN CARD_TYPE ct " +
-                    "ON c.CARD_ID = ct.CARD_TYPE_ID " +
-                    "WHERE c.CARD_ID = ?";
+            "select c.id as card_id, " +
+                    "c.card_number, " +
+                    "c.card_holder_name, " +
+                    "c.card_cvv, " +
+                    "ct.card_type_name, " +
+                    "c.card_expiry_date, " +
+                    "c.card_type_id, " +
+                    "c.account_id, " +
+                    "ct.id as card_type_id " +
+                    "from cards c " +
+                    "left join card_types ct " +
+                    "on c.card_type_id = ct.id " +
+                    "where c.id = ?";
 
     public static final String CREATE_CARD =
-            "INSERT INTO CARD " +
-                    "(CARD_NUMBER, " +
-                    "CARD_EXPIRY_DATE, " +
-                    "CARD_HOLDER_NAME, " +
-                    "CARD_CVV, " +
-                    "CARD_TYPE_ID, " +
-                    "ACCOUNT_ID) " +
-                    "VALUES (?,?,?,?,?,?)";
+            "insert into cards " +
+                    "(card_number, " +
+                    "card_expiry_date, " +
+                    "card_holder_name, " +
+                    "card_cvv, " +
+                    "card_type_id, " +
+                    "account_id) " +
+                    "values (?,?,?,?,?,?)";
 
     public static final String UPDATE_CARD_EXPIRY_DATE_BY_ID =
-            "UPDATE CARD " +
-                    "SET CARD_EXPIRY_DATE = ? " +
-                    "WHERE ACCOUNT_ID = ?";
+            "update cards " +
+                    "set card_expiry_date = ? " +
+                    "where id = ?";
 
     public static final String UPDATE_CARD_BY_ID =
-            "UPDATE CARD " +
-                    "SET CARD_NUMBER = ?, " +
-                    "CARD_EXPIRY_DATE = ?, " +
-                    "CARD_HOLDER_NAME= ?, " +
-                    "CARD_CVV = ?, " +
-                    "CARD_TYPE_ID = ?, " +
-                    "ACCOUNT_ID = ? " +
-                    "WHERE ACCOUNT_ID = ?";
+            "update cards " +
+                    "set card_number = ?, " +
+                    "card_expiry_date = ?, " +
+                    "card_holder_name= ?, " +
+                    "card_cvv = ?, " +
+                    "card_type_id = ?, " +
+                    "account_id = ? " +
+                    "where id = ?";
 
     public static final String DELETE_CARD_BY_ID =
-            "DELETE FROM CARD " +
-                    "WHERE CARD_ID = ?";
+            "delete from cards " +
+                    "where id = ?";
 }
