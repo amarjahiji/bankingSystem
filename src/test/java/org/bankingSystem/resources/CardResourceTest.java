@@ -4,6 +4,7 @@ import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.UUID;
 
 
 class CardResourceTest {
@@ -16,7 +17,7 @@ class CardResourceTest {
 
     @Test
     void getCardById() throws SQLException {
-        Response response = new CardResource().getCardById(1);
+        Response response = new CardResource().getCardById(UUID.fromString("d1e7a3b5-e29b-41d4-a716-446655440000"));
         System.out.println(response.getEntity());
     }
 
@@ -28,13 +29,14 @@ class CardResourceTest {
 
     @Test
     void getCardCardType() throws SQLException {
-        Response response = new CardResource().getCardCardTypeById(1);
+        Response response = new CardResource().getCardCardTypeById(UUID.fromString("d1e7a3b5-e29b-41d4-a716-446655440000"));
         System.out.println(response.getEntity());
     }
 
     @Test
     void createCard() throws SQLException {
         String payload = "{\n"
+                + "  \"cardId\": \"d1e7a3b5-e29b-41d4-a716-446655440000\",\n"
                 + "  \"cardNumber\": \"1233217863748916\",\n"
                 + "  \"cardExpiryDate\": \"2028-08-08\",\n"
                 + "  \"cardHolderName\": \"Dan Doe\",\n"
@@ -56,7 +58,7 @@ class CardResourceTest {
                 "  \"cardTypeId\": 2,\n" +
                 "  \"accountId\": 1\n" +
                 "}";
-        Response response = new CardResource().updateCardById(1, payload);
+        Response response = new CardResource().updateCardById(UUID.fromString("d1e7a3b5-e29b-41d4-a716-446655440000"), payload);
         System.out.println(response.getEntity());
     }
 
@@ -65,13 +67,13 @@ class CardResourceTest {
         String payload = "{\n" +
                 "  \"cardExpiryDate\": \"2028-02-02\"\n" +
                 "}";
-        Response response = new CardResource().updateCardExpiryDateById(3, payload);
+        Response response = new CardResource().updateCardExpiryDateById(UUID.fromString("d1e7a3b5-e29b-41d4-a716-446655440000"), payload);
         System.out.println(response.getEntity());
     }
 
     @Test
     void deleteCardById() throws SQLException {
-        Response response = new CardResource().deleteCardById(9);
+        Response response = new CardResource().deleteCardById(UUID.fromString("d1e7a3b5-e29b-41d4-a716-446655440000"));
         System.out.println(response.getEntity());
     }
 }

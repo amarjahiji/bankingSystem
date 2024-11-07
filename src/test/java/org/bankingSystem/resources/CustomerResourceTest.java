@@ -4,6 +4,7 @@ import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.UUID;
 
 class CustomerResourceTest {
 
@@ -16,7 +17,7 @@ class CustomerResourceTest {
 
     @Test
     void getCustomerById() throws SQLException {
-        Response response = new CustomerResource().getCustomerById(1);
+        Response response = new CustomerResource().getCustomerById(UUID.fromString("7e9d3c3f-bc62-4be3-92dd-3a8ae89e3aa9"));
         System.out.println(response.getEntity());
     }
 
@@ -28,13 +29,14 @@ class CustomerResourceTest {
 
     @Test
     void getCustomerAccountsById() throws SQLException {
-        Response response = new CustomerResource().getCustomerAccountsById(1);
+        Response response = new CustomerResource().getCustomerAccountsById(UUID.fromString("7e9d3c3f-bc62-4be3-92dd-3a8ae89e3aa9"));
         System.out.println(response.getEntity());
     }
 
     @Test
     void createCustomer() throws SQLException {
         String payload = "{\n" +
+                "  \"customerId\": \"7e9d3c3f-bc62-4be3-92dd-3a8ae89e3aa9\",\n" +
                 "  \"customerFirstName\": \"Jack\",\n" +
                 "  \"customerLastName\": \"House\",\n" +
                 "  \"customerDateOfBirth\": \"2004-05-01\",\n" +
@@ -57,7 +59,7 @@ class CustomerResourceTest {
                 "  \"customerPhoneNumber\": \"932-223-0204\",\n" +
                 "  \"customerAddress\": \"South Jersey, 203 B2\"\n" +
                 "}";
-        Response response = new CustomerResource().updateCustomerById(4, payload);
+        Response response = new CustomerResource().updateCustomerById(UUID.fromString("7e9d3c3f-bc62-4be3-92dd-3a8ae89e3aa9"), payload);
         System.out.println(response.getEntity());
     }
 
@@ -66,19 +68,19 @@ class CustomerResourceTest {
         String payload = "{\n" +
                 "  \"customerAddress\": \"South Jersey, 203 B2\"\n" +
                 "}";
-        Response response = new CustomerResource().updateCustomerAddressById(4, payload);
+        Response response = new CustomerResource().updateCustomerAddressById(UUID.fromString("7e9d3c3f-bc62-4be3-92dd-3a8ae89e3aa9"), payload);
         System.out.println(response.getEntity());
     }
 
     @Test
     void deleteCustomerById() throws SQLException {
-        Response response = new CustomerResource().deleteCustomerById(5);
+        Response response = new CustomerResource().deleteCustomerById(UUID.fromString("7e9d3c3f-bc62-4be3-92dd-3a8ae89e3aa9"));
         System.out.println(response.getEntity());
     }
 
     @Test
     void getCustomerAccountsTransactionsById() throws SQLException {
-        Response response = new CustomerResource().getCustomerAccountsTransactionsById(1);
+        Response response = new CustomerResource().getCustomerAccountsTransactionsById(UUID.fromString("7e9d3c3f-bc62-4be3-92dd-3a8ae89e3aa9"));
         System.out.println(response.getEntity());
     }
 
@@ -90,7 +92,7 @@ class CustomerResourceTest {
 
     @Test
     void getCustomerAccountsCardsById() throws SQLException {
-        Response response = new CustomerResource().getCustomerAccountsCardsById(1);
+        Response response = new CustomerResource().getCustomerAccountsCardsById(UUID.fromString("7e9d3c3f-bc62-4be3-92dd-3a8ae89e3aa9"));
         System.out.println(response.getEntity());
     }
 
@@ -102,7 +104,7 @@ class CustomerResourceTest {
 
     @Test
     void getCustomerFirstNameById() throws SQLException {
-        Response response = new CustomerResource().getCustomerFirstNameById(1);
+        Response response = new CustomerResource().getCustomerFirstNameById(UUID.fromString("7e9d3c3f-bc62-4be3-92dd-3a8ae89e3aa9"));
         System.out.println(response.getEntity());
     }
 }

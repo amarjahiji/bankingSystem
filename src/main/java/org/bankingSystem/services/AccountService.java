@@ -4,16 +4,21 @@ import org.bankingSystem.DatabaseConnector;
 import org.bankingSystem.model.Account;
 import org.bankingSystem.queries.AccountSqlQueries;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class AccountService {
     public List<Account> getAccounts() throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         List<Account> accounts = new ArrayList<>();
-        try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery(AccountSqlQueries.GET_ACCOUNTS)) {
+        try (PreparedStatement ps = connection.prepareStatement
+                (AccountSqlQueries.GET_ACCOUNTS);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Account accountModel = new Account(rs);
                 accounts.add(accountModel);
@@ -30,10 +35,11 @@ public class AccountService {
         return accounts;
     }
 
-    public Account getAccountById(int accountId) throws SQLException {
+    public Account getAccountById(UUID accountId) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement(AccountSqlQueries.GET_ACCOUNT_BY_ID)) {
-            ps.setInt(1, accountId);
+        try (PreparedStatement ps = connection.prepareStatement
+                (AccountSqlQueries.GET_ACCOUNT_BY_ID)) {
+            ps.setString(1, accountId.toString());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return new Account(rs);
@@ -52,15 +58,18 @@ public class AccountService {
 
     public Account createAccount(Account accountModel) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(AccountSqlQueries.CREATE_ACCOUNT)) {
-            preparedStatement.setString(1, accountModel.getAccountNumber());
-            preparedStatement.setString(2, accountModel.getAccountType());
-            preparedStatement.setDouble(3, accountModel.getAccountCurrentBalance());
-            preparedStatement.setString(4, accountModel.getAccountDateOpened());
-            preparedStatement.setString(5, accountModel.getAccountDateClosed());
-            preparedStatement.setString(6, accountModel.getAccountStatus());
-            preparedStatement.setInt(7, accountModel.getCustomerId());
-            int rowsAffected = preparedStatement.executeUpdate();
+        try (PreparedStatement ps = connection.prepareStatement
+                (AccountSqlQueries.CREATE_ACCOUNT)) {
+            UUID uuid = UUID.randomUUID();
+            ps.setString(1, uuid.toString());
+            ps.setString(2, accountModel.getAccountNumber());
+            ps.setString(3, accountModel.getAccountType());
+            ps.setDouble(4, accountModel.getAccountCurrentBalance());
+            ps.setString(5, accountModel.getAccountDateOpened());
+            ps.setString(6, accountModel.getAccountDateClosed());
+            ps.setString(7, accountModel.getAccountStatus());
+            ps.setString(8, accountModel.getCustomerId().toString());
+            int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Account created successfully");
             }
@@ -75,17 +84,18 @@ public class AccountService {
         return accountModel;
     }
 
-    public Account updateAccountById(int accountId, Account accountModel) throws SQLException {
+    public Account updateAccountById(UUID accountId, Account accountModel) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement(AccountSqlQueries.UPDATE_ACCOUNT_BY_ID)) {
+        try (PreparedStatement ps = connection.prepareStatement
+                (AccountSqlQueries.UPDATE_ACCOUNT_BY_ID)) {
             ps.setString(1, accountModel.getAccountNumber());
             ps.setString(2, accountModel.getAccountType());
             ps.setDouble(3, accountModel.getAccountCurrentBalance());
             ps.setString(4, accountModel.getAccountDateOpened());
             ps.setString(5, accountModel.getAccountDateClosed());
             ps.setString(6, accountModel.getAccountStatus());
-            ps.setInt(7, accountModel.getCustomerId());
-            ps.setInt(8, accountId);
+            ps.setString(7, accountModel.getCustomerId().toString());
+            ps.setString(8, accountId.toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Update successful!");
@@ -101,11 +111,12 @@ public class AccountService {
         return accountModel;
     }
 
-    public Account updateAccountDateClosedById(int accountId, Account accountModel) throws SQLException {
+    public Account updateAccountDateClosedById(UUID accountId, Account accountModel) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement(AccountSqlQueries.UPDATE_ACCOUNT_DATE_CLOSED_BY_ID)) {
+        try (PreparedStatement ps = connection.prepareStatement
+                (AccountSqlQueries.UPDATE_ACCOUNT_DATE_CLOSED_BY_ID)) {
             ps.setString(1, accountModel.getAccountDateClosed());
-            ps.setInt(2, accountId);
+            ps.setString(2, accountId.toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Successfully updated the account date closed");
@@ -121,11 +132,12 @@ public class AccountService {
         return accountModel;
     }
 
-    public Account updateAccountCurrentBalanceById(int accountId, Account accountModel) throws SQLException {
+    public Account updateAccountCurrentBalanceById(UUID accountId, Account accountModel) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement(AccountSqlQueries.UPDATE_ACCOUNT_CURRENT_BALANCE_BY_ID)) {
+        try (PreparedStatement ps = connection.prepareStatement
+                (AccountSqlQueries.UPDATE_ACCOUNT_CURRENT_BALANCE_BY_ID)) {
             ps.setDouble(1, accountModel.getAccountCurrentBalance());
-            ps.setInt(2, accountId);
+            ps.setString(2, accountId.toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Successfully updated the account current balance");
@@ -141,11 +153,12 @@ public class AccountService {
         return accountModel;
     }
 
-    public Account updateAccountStatusById(int accountId, Account accountModel) throws SQLException {
+    public Account updateAccountStatusById(UUID accountId, Account accountModel) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement(AccountSqlQueries.UPDATE_ACCOUNT_STATUS_BY_ID)) {
+        try (PreparedStatement ps = connection.prepareStatement
+                (AccountSqlQueries.UPDATE_ACCOUNT_STATUS_BY_ID)) {
             ps.setString(1, accountModel.getAccountStatus());
-            ps.setInt(2, accountId);
+            ps.setString(2, accountId.toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Successfully updated the account status");
@@ -161,20 +174,23 @@ public class AccountService {
         return accountModel;
     }
 
-    public boolean deleteAccountById(int accountId) throws SQLException {
+    public boolean deleteAccountById(UUID accountId) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         try {
             connection.setAutoCommit(false);
-            try (PreparedStatement ps = connection.prepareStatement(AccountSqlQueries.DELETE_ACCOUNT_ID_ON_CARDS)) {
-                ps.setInt(1, accountId);
+            try (PreparedStatement ps = connection.prepareStatement
+                    (AccountSqlQueries.DELETE_ACCOUNT_ID_ON_CARDS)) {
+                ps.setString(1, accountId.toString());
                 ps.executeUpdate();
             }
-            try (PreparedStatement ps = connection.prepareStatement(AccountSqlQueries.DELETE_ACCOUNT_ID_ON_TRANSACTIONS)) {
-                ps.setInt(1, accountId);
+            try (PreparedStatement ps = connection.prepareStatement
+                    (AccountSqlQueries.DELETE_ACCOUNT_ID_ON_TRANSACTIONS)) {
+                ps.setString(1, accountId.toString());
                 ps.executeUpdate();
             }
-            try (PreparedStatement ps = connection.prepareStatement(AccountSqlQueries.DELETE_ACCOUNT_BY_ID)) {
-                ps.setInt(1, accountId);
+            try (PreparedStatement ps = connection.prepareStatement
+                    (AccountSqlQueries.DELETE_ACCOUNT_BY_ID)) {
+                ps.setString(1, accountId.toString());
                 int rowsAffected = ps.executeUpdate();
                 if (rowsAffected > 0) {
                     System.out.println("Successfully deleted the account with id: " + accountId);
@@ -195,10 +211,11 @@ public class AccountService {
     }
 
     //Additional that were not requested
-    public String getAccountNumberById(int accountId) throws SQLException {
+    public String getAccountNumberById(UUID accountId) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement(AccountSqlQueries.GET_ACCOUNT_NUMBER_BY_ID)) {
-            ps.setInt(1, accountId);
+        try (PreparedStatement ps = connection.prepareStatement
+                (AccountSqlQueries.GET_ACCOUNT_NUMBER_BY_ID)) {
+            ps.setString(1, accountId.toString());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getString("account_number");

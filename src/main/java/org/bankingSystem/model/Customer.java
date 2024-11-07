@@ -4,9 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Customer {
-    private Integer customerId;
+    private UUID customerId;
     private String customerFirstName;
     private String customerLastName;
     private String customerDateOfBirth;
@@ -15,22 +16,23 @@ public class Customer {
     private String customerAddress;
     private List<Account> accounts;
 
-    public Customer(ResultSet resultSet) throws SQLException {
-        this.customerId = resultSet.getInt("customer_id");
-        this.customerFirstName = resultSet.getString("customer_first_name");
-        this.customerLastName = resultSet.getString("customer_last_name");
-        this.customerDateOfBirth = resultSet.getString("customer_date_of_birth");
-        this.customerEmail = resultSet.getString("customer_email");
-        this.customerPhoneNumber = resultSet.getString("customer_phone_number");
-        this.customerAddress = resultSet.getString("customer_address");
+
+    public Customer(ResultSet rs) throws SQLException {
+        this.customerId = UUID.fromString(rs.getString("customer_id"));
+        this.customerFirstName = rs.getString("customer_first_name");
+        this.customerLastName = rs.getString("customer_last_name");
+        this.customerDateOfBirth = rs.getString("customer_date_of_birth");
+        this.customerEmail = rs.getString("customer_email");
+        this.customerPhoneNumber = rs.getString("customer_phone_number");
+        this.customerAddress = rs.getString("customer_address");
         this.accounts = null;
     }
 
-    public int getCustomerId() {
+    public UUID getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(int customerId) {
+    public void setCustomerId(UUID customerId) {
         this.customerId = customerId;
     }
 

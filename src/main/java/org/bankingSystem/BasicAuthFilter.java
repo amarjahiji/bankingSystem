@@ -17,21 +17,27 @@ import java.util.StringTokenizer;
 @Provider
 public class BasicAuthFilter implements ContainerRequestFilter {
     private static final String AUTHORIZATION_HEADER_PREFIX = "Basic ";
-    private static final String SECURED_URL_PREFIX = "secured";
+    private static final String SECURE_KEYWORD = "secured";
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        if (requestContext.getUriInfo().getPath().contains(SECURED_URL_PREFIX)) {
-            String authHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+        if (requestContext.getUriInfo().getPath()
+                .contains(SECURE_KEYWORD)) {
+            String authHeader = requestContext.getHeaderString
+                    (HttpHeaders.AUTHORIZATION);
             if (authHeader != null && authHeader.startsWith(AUTHORIZATION_HEADER_PREFIX)) {
-                String encodedCredentials = authHeader.replaceFirst(AUTHORIZATION_HEADER_PREFIX, "");
+                String encodedCredentials = authHeader.
+                        replaceFirst(AUTHORIZATION_HEADER_PREFIX, "");
                 String decodedCredentials = new String(Base64.getDecoder().decode(encodedCredentials));
                 StringTokenizer tokenizer = new StringTokenizer(decodedCredentials, ":");
                 String username = tokenizer.nextToken();
                 String password = tokenizer.nextToken();
-                if (checkDb(username, password)) {return;}
+                if (checkDb(username, password)) {
+                    return;
+                }
             }
-            Response unauthorizedStatus = Response.status(Response.Status.UNAUTHORIZED)
+            Response unauthorizedStatus = Response.status
+                            (Response.Status.UNAUTHORIZED)
                     .entity("User cannot access the resource.")
                     .build();
             requestContext.abortWith(unauthorizedStatus);
@@ -40,7 +46,8 @@ public class BasicAuthFilter implements ContainerRequestFilter {
 
     private boolean checkDb(String username, String password) {
         try (Connection connection = DatabaseConnector.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement(AdminSqlQueries.GET_ADMINS);
+            PreparedStatement ps = connection.prepareStatement
+                    (AdminSqlQueries.GET_ADMINS);
             ps.setString(1, username);
             ps.setString(2, password);
             ResultSet rs = ps.executeQuery();

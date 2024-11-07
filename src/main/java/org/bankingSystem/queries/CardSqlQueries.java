@@ -10,7 +10,8 @@ public class CardSqlQueries {
                     "card_cvv, " +
                     "card_type_id, " +
                     "account_id " +
-                    "from cards";
+                    "from cards " +
+                    "order by card_expiry_date asc";
 
     public static final String GET_CARD_BY_ID =
             "select id as card_id, " +
@@ -35,7 +36,8 @@ public class CardSqlQueries {
                     "ct.id as card_type_id " +
                     "from cards c " +
                     "left join card_types ct " +
-                    "on c.card_type_id = ct.id";
+                    "on c.card_type_id = ct.id " +
+                    "order by c.card_expiry_date asc";
 
     public static final String GET_CARD_CARD_TYPE_BY_ID =
             "select c.id as card_id, " +
@@ -54,13 +56,14 @@ public class CardSqlQueries {
 
     public static final String CREATE_CARD =
             "insert into cards " +
-                    "(card_number, " +
+                    "(id, " +
+                    "card_number, " +
                     "card_expiry_date, " +
                     "card_holder_name, " +
                     "card_cvv, " +
                     "card_type_id, " +
                     "account_id) " +
-                    "values (?,?,?,?,?,?)";
+                    "values (?,?,?,?,?,?,?)";
 
     public static final String UPDATE_CARD_EXPIRY_DATE_BY_ID =
             "update cards " +

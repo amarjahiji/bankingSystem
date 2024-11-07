@@ -4,28 +4,29 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Transaction {
-    private Integer transactionId;
+    private UUID transactionId;
     private String transactionType;
     private Float transactionAmount;
     private String transactionDate;
-    private Integer accountId;
+    private UUID accountId;
     private List<CardType> cardType = new ArrayList<>();
 
-    public Transaction(ResultSet resultSet) throws SQLException {
-        this.transactionId = resultSet.getInt("transaction_id");
-        this.transactionType = resultSet.getString("transaction_type");
-        this.transactionAmount = resultSet.getFloat("transaction_amount");
-        this.transactionDate = resultSet.getString("transaction_date");
-        this.accountId = resultSet.getInt("account_id");
+    public Transaction(ResultSet rs) throws SQLException {
+        this.transactionId = UUID.fromString(rs.getString("transaction_id"));
+        this.transactionType = rs.getString("transaction_type");
+        this.transactionAmount = rs.getFloat("transaction_amount");
+        this.transactionDate = rs.getString("transaction_date");
+        this.accountId = UUID.fromString(rs.getString("account_id"));
     }
 
-    public Integer getTransactionId() {
+    public UUID getTransactionId() {
         return transactionId;
     }
 
-    public void setTransactionId(Integer transactionId) {
+    public void setTransactionId(UUID transactionId) {
         this.transactionId = transactionId;
     }
 
@@ -53,11 +54,11 @@ public class Transaction {
         this.transactionDate = transactionDate;
     }
 
-    public Integer getAccountId() {
+    public UUID getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(Integer accountId) {
+    public void setAccountId(UUID accountId) {
         this.accountId = accountId;
     }
 }

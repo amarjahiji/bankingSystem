@@ -7,9 +7,9 @@ public class CardType {
     private Integer cardTypeId;
     private String cardTypeName;
 
-    public CardType(ResultSet resultSet) throws SQLException {
-        this.cardTypeId = resultSet.getInt("card_type_id");
-        this.cardTypeName = resultSet.getString("card_type_name");
+    public CardType(ResultSet rs) throws SQLException {
+        this.cardTypeId = rs.getInt("card_type_id");
+        this.cardTypeName = rs.getString("card_type_name");
     }
 
     public void setCardTypeId(int cardTypeId) {

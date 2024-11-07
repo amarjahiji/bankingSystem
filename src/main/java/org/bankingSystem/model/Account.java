@@ -4,37 +4,38 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Account {
-    private Integer accountId;
+    private UUID accountId;
     private String accountNumber;
     private String accountType;
     private Double accountCurrentBalance;
     private String accountDateOpened;
     private String accountDateClosed;
     private String accountStatus;
-    private Integer customerId;
+    private UUID customerId;
     private List<Transaction> transactions;
     private List<Card> cards;
 
-    public Account(ResultSet resultSet) throws SQLException {
-        this.accountId = resultSet.getInt("account_id");
-        this.accountNumber = resultSet.getString("account_number");
-        this.accountType = resultSet.getString("account_type");
-        this.accountCurrentBalance = resultSet.getDouble("account_current_balance");
-        this.accountDateOpened = resultSet.getString("account_date_opened");
-        this.accountDateClosed = resultSet.getString("account_date_closed");
-        this.accountStatus = resultSet.getString("account_status");
-        this.customerId = resultSet.getInt("customer_id");
+    public Account(ResultSet rs) throws SQLException {
+        this.accountId = UUID.fromString(rs.getString("account_id"));
+        this.accountNumber = rs.getString("account_number");
+        this.accountType = rs.getString("account_type");
+        this.accountCurrentBalance = rs.getDouble("account_current_balance");
+        this.accountDateOpened = rs.getString("account_date_opened");
+        this.accountDateClosed = rs.getString("account_date_closed");
+        this.accountStatus = rs.getString("account_status");
+        this.customerId = UUID.fromString(rs.getString("customer_id"));
         this.transactions = null;
         this.cards = null;
     }
 
-    public int getAccountId() {
+    public UUID getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(Integer accountId) {
+    public void setAccountId(UUID accountId) {
         this.accountId = accountId;
     }
 
@@ -86,11 +87,11 @@ public class Account {
         this.accountStatus = accountStatus;
     }
 
-    public Integer getCustomerId() {
+    public UUID getCustomerId() {
         return customerId;
     }
 
-    public void setCustomerId(Integer customerId) {
+    public void setCustomerId(UUID customerId) {
         this.customerId = customerId;
     }
 

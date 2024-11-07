@@ -4,6 +4,7 @@ import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
+import java.util.UUID;
 
 class TransactionResourceTest {
 
@@ -15,13 +16,14 @@ class TransactionResourceTest {
 
     @Test
     void getTransactionById() throws SQLException {
-        Response response = new TransactionResource().getTransactionById(1);
+        Response response = new TransactionResource().getTransactionById(UUID.fromString("f07a3b5-e29b-41d4-a716-446655440015"));
         System.out.println(response.getEntity());
     }
 
     @Test
     void createTransaction() throws SQLException {
         String payload = "{\n" +
+                "    \"transactionId\": \"f07a3b5-e29b-41d4-a716-446655440015\",\n" +
                 "    \"transactionType\": \"Withdrawal\",\n" +
                 "    \"transactionAmount\": 250.00 ,\n" +
                 "    \"transactionDate\": \"2024-01-10\",\n" +

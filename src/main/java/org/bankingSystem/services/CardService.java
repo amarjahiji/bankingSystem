@@ -5,18 +5,19 @@ import org.bankingSystem.model.Card;
 import org.bankingSystem.model.CardType;
 import org.bankingSystem.queries.CardSqlQueries;
 
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
 
 public class CardService {
     public List<Card> getCards() throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         List<Card> Cards = new ArrayList<>();
-        try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery(CardSqlQueries.GET_CARDS)) {
+        try (PreparedStatement ps = connection.prepareStatement
+                (CardSqlQueries.GET_CARDS);
+             ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Card CardModel = new Card(rs);
                 Cards.add(CardModel);
@@ -33,11 +34,12 @@ public class CardService {
         return Cards;
     }
 
-    public Card getCardById(int cardId) throws SQLException {
+    public Card getCardById(UUID cardId) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement st = connection.prepareStatement(CardSqlQueries.GET_CARD_BY_ID)) {
-            st.setInt(1, cardId);
-            ResultSet rs = st.executeQuery();
+        try (PreparedStatement ps = connection.prepareStatement
+                (CardSqlQueries.GET_CARD_BY_ID)) {
+            ps.setString(1, cardId.toString());
+            ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return new Card(rs);
             }
@@ -57,13 +59,14 @@ public class CardService {
 
     public List<Card> getCardsCardType() throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        Map<Integer, Card> cardMap = new HashMap<>();
-        try (PreparedStatement ps = connection.prepareStatement(CardSqlQueries.GET_CARDS_CARD_TYPE)) {
+        Map<UUID, Card> cardMap = new HashMap<>();
+        try (PreparedStatement ps = connection.prepareStatement
+                (CardSqlQueries.GET_CARDS_CARD_TYPE)) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                Integer cardId = rs.getInt("card_id");
+                UUID cardId = UUID.fromString(rs.getString("card_id"));
                 cardMap.putIfAbsent(cardId, new Card(rs));
-                if (rs.getInt("card_type_id") != 0) {
+                if (rs.getString("card_type_id") != null  || !rs.getString("card_type").isEmpty()) {
                     CardType cardType = new CardType(rs);
                     cardMap.get(cardId).addCardType(cardType);
                 }
@@ -80,24 +83,25 @@ public class CardService {
         return new ArrayList<>(cardMap.values());
     }
 
-    public List<Card> getCardCardTypeById(int cardId) throws SQLException {
+    public List<Card> getCardCardTypeById(UUID cardId) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        Map<Integer, Card> cardMap = new HashMap<>();
-        try (PreparedStatement ps = connection.prepareStatement(CardSqlQueries.GET_CARD_CARD_TYPE_BY_ID)) {
-            ps.setInt(1, cardId);
-            ResultSet rs = ps.executeQuery();
+        Map<UUID, Card> cardMap = new HashMap<>();
+        try (PreparedStatement st = connection.prepareStatement
+                (CardSqlQueries.GET_CARD_CARD_TYPE_BY_ID)) {
+            st.setString(1, cardId.toString());
+            ResultSet rs = st.executeQuery();
             while (rs.next()) {
-                Integer customerIdd = rs.getInt("card_id");
-                cardMap.putIfAbsent(customerIdd, new Card(rs));
-                if (rs.getInt("card_type_id") != 0) {
+                UUID cardIdd = UUID.fromString(rs.getString("card_id"));
+                cardMap.putIfAbsent(cardIdd, new Card(rs));
+                if (rs.getString("card_type_id") != null) {
                     CardType cardType = new CardType(rs);
-                    cardMap.get(cardId).addCardType(cardType);
+                    cardMap.get(cardIdd).addCardType(cardType);
                 }
             }
-            System.out.println("Card retreived successfully");
+            System.out.println("Card card type retrieved successfully");
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("Failed to retrieve card");
+            System.out.println("Failed to get customers' accounts");
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -108,13 +112,16 @@ public class CardService {
 
     public Card createCard(Card card) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement(CardSqlQueries.CREATE_CARD)) {
-            ps.setString(1, card.getCardNumber());
-            ps.setString(2, card.getCardExpiryDate());
-            ps.setString(3, card.getCardHolderName());
-            ps.setString(4, card.getCardCvv());
-            ps.setInt(5, card.getCardTypeId());
-            ps.setInt(6, card.getAccountId());
+        try (PreparedStatement ps = connection.prepareStatement
+                (CardSqlQueries.CREATE_CARD)) {
+            UUID uuid = UUID.randomUUID();
+            ps.setString(1, uuid.toString());
+            ps.setString(2, card.getCardNumber());
+            ps.setString(3, card.getCardExpiryDate());
+            ps.setString(4, card.getCardHolderName());
+            ps.setString(5, card.getCardCvv());
+            ps.setInt(6, card.getCardTypeId());
+            ps.setString(7, card.getAccountId().toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Card created successfully");
@@ -130,16 +137,17 @@ public class CardService {
         return card;
     }
 
-    public Card updateCardById(int accountId, Card card) throws SQLException {
+    public Card updateCardById(UUID cardId, Card card) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement(CardSqlQueries.UPDATE_CARD_BY_ID)) {
+        try (PreparedStatement ps = connection.prepareStatement
+                (CardSqlQueries.UPDATE_CARD_BY_ID)) {
             ps.setString(1, card.getCardNumber());
             ps.setString(2, card.getCardExpiryDate());
             ps.setString(3, card.getCardHolderName());
             ps.setString(4, card.getCardCvv());
             ps.setInt(5, card.getCardTypeId());
-            ps.setInt(6, card.getAccountId());
-            ps.setInt(7, accountId);
+            ps.setString(6, card.getAccountId().toString());
+            ps.setString(7, cardId.toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Update successful!");
@@ -154,11 +162,12 @@ public class CardService {
         return card;
     }
 
-    public Card updateCardExpiryDateById(int accountId, Card cardExpiryDate) throws SQLException {
+    public Card updateCardExpiryDateById(UUID cardId, Card cardExpiryDate) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement(CardSqlQueries.UPDATE_CARD_EXPIRY_DATE_BY_ID)) {
+        try (PreparedStatement ps = connection.prepareStatement
+                (CardSqlQueries.UPDATE_CARD_EXPIRY_DATE_BY_ID)) {
             ps.setString(1, cardExpiryDate.getCardExpiryDate());
-            ps.setInt(2, accountId);
+            ps.setString(2, cardId.toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Update successful!");
@@ -173,10 +182,11 @@ public class CardService {
         return cardExpiryDate;
     }
 
-    public boolean deleteCardById(int cardId) throws SQLException {
+    public boolean deleteCardById(UUID cardId) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement(CardSqlQueries.DELETE_CARD_BY_ID)) {
-            ps.setInt(1, cardId);
+        try (PreparedStatement ps = connection.prepareStatement
+                (CardSqlQueries.DELETE_CARD_BY_ID)) {
+            ps.setString(1, cardId.toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Deleted Card successful");

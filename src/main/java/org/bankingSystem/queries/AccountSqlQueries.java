@@ -11,7 +11,8 @@ public class AccountSqlQueries {
                     "account_date_closed, " +
                     "account_status, " +
                     "customer_id " +
-                    "from accounts";
+                    "from accounts " +
+                    "order by account_date_opened asc";
 
     public static final String GET_ACCOUNT_BY_ID =
             "select id as account_id, " +
@@ -23,7 +24,9 @@ public class AccountSqlQueries {
                     "account_status, " +
                     "customer_id " +
                     "from accounts " +
-                    "where id = ?";
+                    "where id = ? " +
+                    "order by account_date_opened asc";
+
 
     public static final String GET_ACCOUNT_NUMBER_BY_ID =
             "select account_number " +
@@ -40,7 +43,7 @@ public class AccountSqlQueries {
                     "where account_id = ?";
 
     public static final String GET_ACCOUNT_CARDS_BY_ID =
-            "select id as card_id " +
+            "select id as card_id, " +
                     "card_number, " +
                     "card_expiry_date, " +
                     "card_holder_name, " +
@@ -52,14 +55,15 @@ public class AccountSqlQueries {
 
     public static final String CREATE_ACCOUNT =
             "insert into accounts " +
-                    "(account_number, " +
+                    "(id ," +
+                    "account_number, " +
                     "account_type, " +
                     "account_current_balance, " +
                     "account_date_opened, " +
                     "account_date_closed, " +
                     "account_status, " +
                     "customer_id) " +
-                    "values (?, ?, ?, ?, ?, ?, ?)";
+                    "values (?, ?, ?, ?, ?, ?, ?, ?)";
 
     public static final String UPDATE_ACCOUNT_DATE_CLOSED_BY_ID =
             "update accounts " +
@@ -91,9 +95,9 @@ public class AccountSqlQueries {
             "delete from cards " +
                     "where account_id = ?; ";
 
-    public static final String DELETE_ACCOUNT_ID_ON_TRANSACTIONS=
-         "delete from transactions " +
-                 "where account_id = ?; ";
+    public static final String DELETE_ACCOUNT_ID_ON_TRANSACTIONS =
+            "delete from transactions " +
+                    "where account_id = ?; ";
 
     public static final String DELETE_ACCOUNT_BY_ID =
             "delete from accounts " +

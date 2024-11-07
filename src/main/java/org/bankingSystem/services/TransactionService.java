@@ -7,13 +7,15 @@ import org.bankingSystem.queries.TransactionSqlQueries;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class TransactionService {
     public List<Transaction> getTransactions() throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         List<Transaction> transactions = new ArrayList<>();
         try (Statement st = connection.createStatement()) {
-            ResultSet rs = st.executeQuery(TransactionSqlQueries.GET_TRANSACTIONS);
+            ResultSet rs = st.executeQuery
+                    (TransactionSqlQueries.GET_TRANSACTIONS);
             while (rs.next()) {
                 Transaction newTransaction = new Transaction(rs);
                 transactions.add(newTransaction);
@@ -31,10 +33,11 @@ public class TransactionService {
 
     }
 
-    public Transaction getTransactionById(int transactionId) throws SQLException {
+    public Transaction getTransactionById(UUID transactionId) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement(TransactionSqlQueries.GET_TRANSACTION_BY_ID)) {
-            ps.setInt(1, transactionId);
+        try (PreparedStatement ps = connection.prepareStatement
+                (TransactionSqlQueries.GET_TRANSACTION_BY_ID)) {
+            ps.setString(1, transactionId.toString());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
                 return new Transaction(rs);
@@ -54,11 +57,14 @@ public class TransactionService {
 
     public Transaction createTransaction(Transaction transactions) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement(TransactionSqlQueries.CREATE_TRANSACTION)) {
-            ps.setString(1, transactions.getTransactionType());
-            ps.setFloat(2, transactions.getTransactionAmount());
-            ps.setString(3, transactions.getTransactionDate());
-            ps.setInt(4, transactions.getAccountId());
+        try (PreparedStatement ps = connection.prepareStatement
+                (TransactionSqlQueries.CREATE_TRANSACTION)) {
+            UUID uuid = UUID.randomUUID();
+            ps.setString(1, uuid.toString());
+            ps.setString(2, transactions.getTransactionType());
+            ps.setFloat(3, transactions.getTransactionAmount());
+            ps.setString(4, transactions.getTransactionDate());
+            ps.setString(5, transactions.getAccountId().toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected > 0) {
                 System.out.println("Insert successful!");

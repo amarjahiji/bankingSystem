@@ -4,43 +4,45 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Card {
-    private Integer cardId;
+    private UUID cardId;
     private String cardNumber;
     private String cardExpiryDate;
     private String cardHolderName;
     private String cardCvv;
     private Integer cardTypeId;
-    private Integer accountId;
+    private UUID accountId;
     private List<CardType> cardType;
 
 
     public Card() {
     }
 
-    public Card(ResultSet resultSet) throws SQLException {
-        this.cardId = resultSet.getInt("card_id");
-        this.cardNumber = resultSet.getString("card_number");
-        this.cardExpiryDate = resultSet.getString("card_expiry_date");
-        this.cardHolderName = resultSet.getString("card_holder_name");
-        this.cardCvv = resultSet.getString("card_cvv");
-        this.cardTypeId = resultSet.getInt("card_type_id");
-        this.accountId = resultSet.getInt("account_id");
+    public Card(ResultSet rs) throws SQLException {
+        this.cardId = UUID.fromString(rs.getString("card_id"));
+        this.cardNumber = rs.getString("card_number");
+        this.cardExpiryDate = rs.getString("card_expiry_date");
+        this.cardHolderName = rs.getString("card_holder_name");
+        this.cardCvv = rs.getString("card_cvv");
+        this.cardTypeId = rs.getInt("card_type_id");
+        this.accountId = UUID.fromString(rs.getString("account_id"));
     }
 
     public Card(List<CardType> cardType) {
         this.cardType = cardType;
     }
+
     public Card(CardType cardType) {
         this.cardType = new ArrayList<>();
     }
 
-    public Integer getCardId() {
+    public UUID getCardId() {
         return cardId;
     }
 
-    public void setCardId(Integer cardId) {
+    public void setCardId(UUID cardId) {
         this.cardId = cardId;
     }
 
@@ -84,11 +86,11 @@ public class Card {
         this.cardTypeId = cardTypeId;
     }
 
-    public Integer getAccountId() {
+    public UUID getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(int accountId) {
+    public void setAccountId(UUID accountId) {
         this.accountId = accountId;
     }
 
@@ -104,6 +106,6 @@ public class Card {
     }
 
     public void setCardType(List<CardType> cardType) {
-            this.cardType = cardType;
-        }
+        this.cardType = cardType;
+    }
 }

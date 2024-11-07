@@ -20,8 +20,9 @@ public class CardTypeResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getCardTypes() throws SQLException {
-            List<CardType> cardTypeModels = CARD_TYPE_SERVICE.getCardTypes();
-            String json = GSON.toJson(cardTypeModels);
-            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        List<CardType> cardTypeModels = CARD_TYPE_SERVICE
+                .getCardTypes();
+        String json = GSON.toJson(cardTypeModels);
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 }

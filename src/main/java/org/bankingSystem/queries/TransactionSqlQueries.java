@@ -6,8 +6,9 @@ public class TransactionSqlQueries {
                     "transaction_type, " +
                     "transaction_amount, " +
                     "transaction_date, " +
-                    "account_id" +
-                    " from transactions";
+                    "account_id " +
+                    "from transactions " +
+                    "order by transaction_date desc";
 
     public static final String GET_TRANSACTION_BY_ID =
             "select id as transaction_id, " +
@@ -20,9 +21,10 @@ public class TransactionSqlQueries {
 
     public static final String CREATE_TRANSACTION =
             "insert into transactions " +
-                    "(transaction_type, " +
+                    "(id, " +
+                    "transaction_type, " +
                     "transaction_amount, " +
                     "transaction_date, " +
                     "account_id) " +
-                    "values (?,?,?,?)";
+                    "values (?,?,?,?,?)";
 }

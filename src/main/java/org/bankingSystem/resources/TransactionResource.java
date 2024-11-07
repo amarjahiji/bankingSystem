@@ -9,6 +9,7 @@ import org.bankingSystem.services.TransactionService;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 @Path("transaction")
 public class TransactionResource {
@@ -18,19 +19,20 @@ public class TransactionResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTransactions() throws SQLException {
-            List<Transaction> transactionList = TRANSACTION_SERVICE.getTransactions();
-            String json = GSON.toJson(transactionList);
-            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        List<Transaction> transactions = TRANSACTION_SERVICE
+                .getTransactions();
+        String json = GSON.toJson(transactions);
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
 
     }
 
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getTransactionById(@PathParam("id") int transactionId) throws SQLException {
-            Transaction transaction = TRANSACTION_SERVICE.getTransactionById(transactionId);
-            String json = GSON.toJson(transaction);
-            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    public Response getTransactionById(@PathParam("id") UUID transactionId) throws SQLException {
+        Transaction transaction = TRANSACTION_SERVICE.getTransactionById(transactionId);
+        String json = GSON.toJson(transaction);
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 
     @Path("/add/secured/")
@@ -39,8 +41,9 @@ public class TransactionResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createTransaction(String payload) throws SQLException {
         Transaction transaction = GSON.fromJson(payload, Transaction.class);
-            Transaction transactions = TRANSACTION_SERVICE.createTransaction(transaction);
-            String json = GSON.toJson(transactions);
-            return Response.ok(json, MediaType.APPLICATION_JSON).build();
+        Transaction createdTransaction = TRANSACTION_SERVICE
+                .createTransaction(transaction);
+        String json = GSON.toJson(createdTransaction);
+        return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 }

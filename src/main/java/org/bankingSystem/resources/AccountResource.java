@@ -6,8 +6,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.bankingSystem.model.Account;
 import org.bankingSystem.services.AccountService;
+
 import java.sql.SQLException;
 import java.util.List;
+import java.util.UUID;
 
 @Path("account")
 public class AccountResource {
@@ -17,18 +19,21 @@ public class AccountResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAccounts() throws SQLException {
-        List<Account> accountList = ACCOUNT_SERVICE.getAccounts();
-        String json = GSON.toJson(accountList);
+        List<Account> accounts = ACCOUNT_SERVICE
+                .getAccounts();
+        String json = GSON.toJson(accounts);
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAccountById(@PathParam("id") int accountId) throws SQLException {
-        Account account = ACCOUNT_SERVICE.getAccountById(accountId);
+    public Response getAccountById(@PathParam("id") UUID accountId) throws SQLException {
+        Account account = ACCOUNT_SERVICE
+                .getAccountById(accountId);
         if (account == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("Account not found").build();
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity("Account not found").build();
         }
         String json = GSON.toJson(account);
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
@@ -41,8 +46,9 @@ public class AccountResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createAccount(String payload) throws SQLException {
         Account account = GSON.fromJson(payload, Account.class);
-        Account updatedAccountModel = ACCOUNT_SERVICE.createAccount(account);
-        String json = GSON.toJson(updatedAccountModel);
+        Account updatedAccount = ACCOUNT_SERVICE
+                .createAccount(account);
+        String json = GSON.toJson(updatedAccount);
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 
@@ -50,10 +56,11 @@ public class AccountResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateAccountById(@PathParam("id") int accountId, String payload) throws SQLException {
+    public Response updateAccountById(@PathParam("id") UUID accountId, String payload) throws SQLException {
         Account account = GSON.fromJson(payload, Account.class);
-        Account accountModel = ACCOUNT_SERVICE.updateAccountById(accountId, account);
-        String json = GSON.toJson(accountModel);
+        Account updatedAccount = ACCOUNT_SERVICE.
+                updateAccountById(accountId, account);
+        String json = GSON.toJson(updatedAccount);
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 
@@ -61,10 +68,11 @@ public class AccountResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateAccountDateClosedById(@PathParam("id") int accountId, String payload) throws SQLException {
+    public Response updateAccountDateClosedById(@PathParam("id") UUID accountId, String payload) throws SQLException {
         Account account = GSON.fromJson(payload, Account.class);
-        Account AccountModel = ACCOUNT_SERVICE.updateAccountDateClosedById(accountId, account);
-        String json = GSON.toJson(AccountModel);
+        Account updatedAccount = ACCOUNT_SERVICE.
+                updateAccountDateClosedById(accountId, account);
+        String json = GSON.toJson(updatedAccount);
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 
@@ -72,10 +80,11 @@ public class AccountResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateAccountCurrentBalanceById(@PathParam("id") int accountId, String payload) throws SQLException {
+    public Response updateAccountCurrentBalanceById(@PathParam("id") UUID accountId, String payload) throws SQLException {
         Account account = GSON.fromJson(payload, Account.class);
-        Account accountModel = ACCOUNT_SERVICE.updateAccountCurrentBalanceById(accountId, account);
-        String json = GSON.toJson(accountModel);
+        Account updatedAccount = ACCOUNT_SERVICE.
+                updateAccountCurrentBalanceById(accountId, account);
+        String json = GSON.toJson(updatedAccount);
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 
@@ -83,18 +92,20 @@ public class AccountResource {
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateAccountStatusById(@PathParam("id") int accountId, String payload) throws SQLException {
+    public Response updateAccountStatusById(@PathParam("id") UUID accountId, String payload) throws SQLException {
         Account account = GSON.fromJson(payload, Account.class);
-        Account AccountModel = ACCOUNT_SERVICE.updateAccountStatusById(accountId, account);
-        String json = GSON.toJson(AccountModel);
+        Account updatedAccount = ACCOUNT_SERVICE
+                .updateAccountStatusById(accountId, account);
+        String json = GSON.toJson(updatedAccount);
         return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 
     @DELETE
     @Path("/delete/secured/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteAccountById(@PathParam("id") int accountId) throws SQLException {
-        boolean isDeleted = ACCOUNT_SERVICE.deleteAccountById(accountId);
+    public Response deleteAccountById(@PathParam("id") UUID accountId) throws SQLException {
+        boolean isDeleted = ACCOUNT_SERVICE
+                .deleteAccountById(accountId);
         if (isDeleted) {
             return Response.ok("Account deleted successfully.").build();
         } else {
@@ -106,8 +117,9 @@ public class AccountResource {
     @Path("accountnumber/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAccountNumberById(@PathParam("id") int accountId) throws SQLException {
-        String accountNumber = ACCOUNT_SERVICE.getAccountNumberById(accountId);
+    public Response getAccountNumberById(@PathParam("id") UUID accountId) throws SQLException {
+        String accountNumber = ACCOUNT_SERVICE
+                .getAccountNumberById(accountId);
         if (accountNumber == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("No Account Number found").build();
         }
