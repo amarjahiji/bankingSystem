@@ -10,7 +10,6 @@ public class Card {
     private UUID cardId;
     private String cardNumber;
     private String cardExpiryDate;
-    private String cardHolderName;
     private String cardCvv;
     private Integer cardTypeId;
     private UUID accountId;
@@ -24,7 +23,6 @@ public class Card {
         this.cardId = UUID.fromString(rs.getString("card_id"));
         this.cardNumber = rs.getString("card_number");
         this.cardExpiryDate = rs.getString("card_expiry_date");
-        this.cardHolderName = rs.getString("card_holder_name");
         this.cardCvv = rs.getString("card_cvv");
         this.cardTypeId = rs.getInt("card_type_id");
         this.accountId = UUID.fromString(rs.getString("account_id"));
@@ -60,14 +58,6 @@ public class Card {
 
     public void setCardExpiryDate(String cardExpiryDate) {
         this.cardExpiryDate = cardExpiryDate;
-    }
-
-    public String getCardHolderName() {
-        return cardHolderName;
-    }
-
-    public void setCardHolderName(String cardHolderName) {
-        this.cardHolderName = cardHolderName;
     }
 
     public String getCardCvv() {

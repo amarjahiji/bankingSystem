@@ -18,32 +18,59 @@ public class TransactionResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getTransactions() throws SQLException {
-        List<Transaction> transactions = TRANSACTION_SERVICE
-                .getTransactions();
-        String json = GSON.toJson(transactions);
-        return Response.ok(json, MediaType.APPLICATION_JSON).build();
-
+    public Response getTransactions() {
+        try {
+            List<Transaction> transactions = TRANSACTION_SERVICE.getTransactions();
+            if (!transactions.isEmpty()) {
+                String json = GSON.toJson(transactions);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).entity("No transactions found").build();
+            }
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getTransactionById(@PathParam("id") UUID transactionId) throws SQLException {
-        Transaction transaction = TRANSACTION_SERVICE.getTransactionById(transactionId);
-        String json = GSON.toJson(transaction);
-        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    public Response getTransactionById(@PathParam("id") UUID transactionId) {
+        try {
+            Transaction transaction = TRANSACTION_SERVICE.getTransactionById(transactionId);
+            if (transaction != null) {
+                String json = GSON.toJson(transaction);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).entity("No transaction found with id: " + transactionId).build();
+            }
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 
     @Path("/add/secured/")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createTransaction(String payload) throws SQLException {
-        Transaction transaction = GSON.fromJson(payload, Transaction.class);
-        Transaction createdTransaction = TRANSACTION_SERVICE
-                .createTransaction(transaction);
-        String json = GSON.toJson(createdTransaction);
-        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    public Response createTransaction(String payload) {
+        try {
+            Transaction transaction = GSON.fromJson(payload, Transaction.class);
+            Transaction createdTransaction = TRANSACTION_SERVICE.createTransaction(transaction);
+            if (createdTransaction != null) {
+                String json = GSON.toJson(createdTransaction);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            } else {
+                return Response.status(Response.Status.NO_CONTENT).entity("Transaction not created").build();
+            }
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 }

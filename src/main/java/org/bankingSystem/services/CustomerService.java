@@ -12,20 +12,18 @@ import java.sql.*;
 import java.util.*;
 
 public class CustomerService {
-    public List<Customer> getCustomers() throws SQLException {
+    public List<Customer> getCustomers(String query) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         List<Customer> customers = new ArrayList<>();
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery
-                     (CustomerSqlQueries.GET_CUSTOMERS)) {
+             ResultSet rs = st.executeQuery(query)) {
             while (rs.next()) {
                 Customer customer = new Customer(rs);
                 customers.add(customer);
             }
-            System.out.println("Customers retrieved successfully");
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to get customers");
+            throw new SQLException("Failed to get customers" +
+                    e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -34,84 +32,46 @@ public class CustomerService {
         return customers;
     }
 
-    public Integer getTotalNumberOfCustomers() throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
-        try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery
-                     (CustomerSqlQueries.GET_TOTAL_NUMBER_OF_CUSTOMERS)) {
-            if (rs.next()) {
-                return rs.getInt("total");
-            }
-        }
-        return 0;
+    public List<Customer> getAllCustomers() throws SQLException {
+        return getCustomers(CustomerSqlQueries.GET_CUSTOMERS);
     }
 
     public List<Customer> getOldCustomers() throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
-        List<Customer> customers = new ArrayList<>();
-        try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery
-                     (CustomerSqlQueries.GET_OLD_CUSTOMERS)) {
-            while (rs.next()) {
-                Customer customerModel = new Customer(rs);
-                customers.add(customerModel);
-            }
-            System.out.println("Customers retrieved successfully");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to get customers");
-        } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
-        }
-        return customers;
-    }
-
-    public Integer getTotalNumberOfOldCustomers() throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
-        try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery
-                     (CustomerSqlQueries.GET_TOTAL_NUMBER_OF_OLD_CUSTOMERS)) {
-            if (rs.next()) {
-                return rs.getInt("total");
-            }
-        }
-        return 0;
+        return getCustomers(CustomerSqlQueries.GET_OLD_CUSTOMERS);
     }
 
     public List<Customer> getYoungCustomers() throws SQLException {
+        return getCustomers(CustomerSqlQueries.GET_YOUNG_CUSTOMERS);
+    }
+
+    public Integer getTotalNumberOfCustomers(String query) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        List<Customer> customers = new ArrayList<>();
         try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery
-                     (CustomerSqlQueries.GET_YOUNG_CUSTOMERS)) {
-            while (rs.next()) {
-                Customer customerModel = new Customer(rs);
-                customers.add(customerModel);
+             ResultSet rs = st.executeQuery(query)) {
+            if (rs.next()) {
+                return rs.getInt("total");
             }
-            System.out.println("Customers retrieved successfully");
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to get customers");
+            throw new SQLException("Failed to get total number of customers" +
+                    e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
             }
         }
-        return customers;
+        return 0;
+    }
+
+    public Integer getTotalNumberOfAllCustomers() throws SQLException {
+        return getTotalNumberOfCustomers(CustomerSqlQueries.GET_TOTAL_NUMBER_OF_CUSTOMERS);
+    }
+
+    public Integer getTotalNumberOfOldCustomers() throws SQLException {
+        return getTotalNumberOfCustomers(CustomerSqlQueries.GET_TOTAL_NUMBER_OF_OLD_CUSTOMERS);
     }
 
     public Integer getTotalNumberOfYoungCustomers() throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
-        try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery
-                     (CustomerSqlQueries.GET_TOTAL_NUMBER_OF_YOUNG_CUSTOMERS)) {
-            if (rs.next()) {
-                return rs.getInt("total");
-            }
-        }
-        return 0;
+        return getTotalNumberOfCustomers(CustomerSqlQueries.GET_TOTAL_NUMBER_OF_YOUNG_CUSTOMERS);
     }
 
     public Customer getCustomerById(UUID customerId) throws SQLException {
@@ -123,11 +83,9 @@ public class CustomerService {
             if (rs.next()) {
                 return new Customer(rs);
             }
-            System.out.println("Customer with id: " + customerId + " retrieved successfully");
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to retrieve customer with id: " + customerId);
-            throw e;
+            throw new SQLException("Failed to get customer by id :" + customerId +
+                    e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -144,17 +102,15 @@ public class CustomerService {
             st.setString(1, customerId.toString());
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
-                UUID customerIdd = UUID.fromString(rs.getString("customer_id"));
-                customerMap.putIfAbsent(customerIdd, new Customer(rs));
+                UUID customerUuid = UUID.fromString(rs.getString("customer_id"));
+                customerMap.putIfAbsent(customerUuid, new Customer(rs));
                 if (rs.getString("account_id") != null) {
                     Account account = new Account(rs);
-                    customerMap.get(customerIdd).addAccount(account);
+                    customerMap.get(customerUuid).addAccount(account);
                 }
             }
-            System.out.println("Customer accounts retrieved successfully");
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to get customers' accounts");
+            throw new SQLException("Failed to get customer accounts by id: " + customerId + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -177,10 +133,8 @@ public class CustomerService {
                     customerMap.get(customerId).addAccount(account);
                 }
             }
-            System.out.println("Customer accounts retrieved successfully");
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to get customers accounts");
+            throw new SQLException("Failed to get customer accounts: " + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -202,12 +156,11 @@ public class CustomerService {
             ps.setString(6, customerModel.getCustomerPhoneNumber());
             ps.setString(7, customerModel.getCustomerAddress());
             int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Insert successful!");
+            if (rowsAffected < 1) {
+                throw new SQLException("No rows affected trying to create a customer");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to create customer");
+            throw new SQLException("Failed to create customer: " + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -228,12 +181,11 @@ public class CustomerService {
             ps.setString(6, customerModel.getCustomerAddress());
             ps.setString(7, customerId.toString());
             int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Update successful!");
+            if (rowsAffected < 1) {
+                throw new SQLException("No rows affected trying to update  customer by id: " + customerId);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Update failed, no rows affected.");
+            throw new SQLException("Failed to update customer with id: " + customerId + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -249,12 +201,11 @@ public class CustomerService {
             ps.setString(1, customerModel.getCustomerAddress());
             ps.setString(2, customerId.toString());
             int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Update successful!");
+            if (rowsAffected < 1) {
+                throw new SQLException("No rows affected trying to update address of customer with id: " + customerId);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Update failed, no rows affected.");
+            throw new SQLException("Failed to update customer address with id: " + customerId + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -270,12 +221,11 @@ public class CustomerService {
             ps.setString(1, customerModel.getCustomerEmail());
             ps.setString(2, customerId.toString());
             int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Update successful!");
+            if (rowsAffected < 1) {
+                throw new SQLException("No rows affected trying to update email of customer with id: " + customerId);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Update failed, no rows affected.");
+            throw new SQLException("Failed to update customer email with id: " + customerId + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -291,12 +241,11 @@ public class CustomerService {
             ps.setString(1, customerModel.getCustomerPhoneNumber());
             ps.setString(2, customerId.toString());
             int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Update successful!");
+            if (rowsAffected < 1) {
+                throw new SQLException("No rows affected trying to update phone number of customer with id: " + customerId);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Update failed, no rows affected.");
+            throw new SQLException("Failed to update customer phone number with id: " + customerId + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -312,22 +261,23 @@ public class CustomerService {
             try (PreparedStatement ps = connection.prepareStatement
                     (CustomerSqlQueries.DELETE_CUSTOMER_FROM_ACCOUNTS)) {
                 ps.setString(1, customerId.toString());
-                ps.executeUpdate();
+                int rowsAffected = ps.executeUpdate();
+                if (rowsAffected < 1) {
+                    throw new SQLException("No rows affected when trying to delete account ");
+                }
             }
             try (PreparedStatement ps = connection.prepareStatement
                     (CustomerSqlQueries.DELETE_CUSTOMER_BY_ID)) {
                 ps.setString(1, customerId.toString());
                 int rowsAffected = ps.executeUpdate();
-                if (rowsAffected > 0) {
-                    System.out.println("Successfully deleted the account with id: " + customerId);
+                if (rowsAffected < 1) {
+                    throw new SQLException("No rows affected when trying tp delete customer");
                 }
             }
             connection.commit();
         } catch (SQLException e) {
             connection.rollback();
-            e.printStackTrace();
-            System.out.println("Failed to delete the account with id: " + customerId);
-            return false;
+            throw new SQLException("Failed to delete customer with id: " + customerId + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -346,49 +296,35 @@ public class CustomerService {
             ps.setString(1, customerId.toString());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                UUID customerIdd = UUID.fromString(rs.getString("customer_id"));
-                UUID accountId = UUID.fromString(rs.getString("account_id"));
-                customerMap.putIfAbsent(customerIdd, new Customer(rs));
-                if (!accountMap.containsKey(accountId)) {
-                    Account accountModel = new Account(rs);
-                    customerMap.get(customerIdd).addAccount(accountModel);
-                    accountMap.putIfAbsent(accountId, accountModel);
+                String customerIdStr = rs.getString("customer_id");
+                String accountIdStr = rs.getString("account_id");
+                if (customerIdStr != null && !customerIdStr.isEmpty()) {
+                    UUID customerUuid = UUID.fromString(customerIdStr);
+                    customerMap.putIfAbsent(customerUuid, new Customer(rs));
+                    if (accountIdStr != null && !accountIdStr.isEmpty() && !accountMap.containsKey(UUID.fromString(accountIdStr))) {
+                        UUID accountUuid = UUID.fromString(accountIdStr);
+                        Account accountModel = new Account(rs);
+                        customerMap.get(customerUuid).addAccount(accountModel);
+                        accountMap.putIfAbsent(accountUuid, accountModel);
+                    }
+                } else {
+                    throw new SQLException("Null or empty customer ID found");
                 }
             }
-            System.out.println("Accounts of customer retrieved successfully.");
             for (Account account : accountMap.values()) {
-                List<Transaction> transactions = getTransactionsForAccount(account.getAccountId());
+                List<Transaction> transactions = getTransactionsForAccount(connection, account.getAccountId());
                 if (!transactions.isEmpty()) {
                     account.setTransaction(transactions);
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to get customers and accounts and transactions");
+            throw new SQLException("Failed to retrieve customers accounts and transactions");
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
             }
         }
         return new ArrayList<>(customerMap.values());
-    }
-
-    public List<Transaction> getTransactionsForAccount(UUID accountId) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
-        List<Transaction> transactions = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement
-                (AccountSqlQueries.GET_ACCOUNT_TRANSACTIONS_BY_ID)) {
-            ps.setString(1, accountId.toString());
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                transactions.add(new Transaction(rs));
-            }
-            System.out.println("Transactions retrieved successfully!");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Error retrieving transactions by ID: " + accountId);
-        }
-        return transactions;
     }
 
     public List<Customer> getCustomersAccountsTransactions() throws SQLException {
@@ -401,35 +337,47 @@ public class CustomerService {
                 String customerIdStr = rs.getString("customer_id");
                 String accountIdStr = rs.getString("account_id");
                 if (customerIdStr != null && !customerIdStr.isEmpty()) {
-                    UUID customerIdd = UUID.fromString(customerIdStr);
-                    customerMap.putIfAbsent(customerIdd, new Customer(rs));
+                    UUID customerUuid = UUID.fromString(customerIdStr);
+                    customerMap.putIfAbsent(customerUuid, new Customer(rs));
                     if (accountIdStr != null && !accountIdStr.isEmpty() && !accountMap.containsKey(UUID.fromString(accountIdStr))) {
-                        UUID accountId = UUID.fromString(accountIdStr);
-                        Account accountModel = new Account(rs);
-                        customerMap.get(customerIdd).addAccount(accountModel);
-                        accountMap.putIfAbsent(accountId, accountModel);
+                        UUID accountUuid = UUID.fromString(accountIdStr);
+                        Account account = new Account(rs);
+                        customerMap.get(customerUuid).addAccount(account);
+                        accountMap.putIfAbsent(accountUuid, account);
                     }
                 } else {
-                    System.out.println("Null or empty customer ID found in the ResultSet");
+                    throw new SQLException("Null or empty customer ID found");
                 }
             }
-            System.out.println("Accounts of customers retrieved successfully.");
-
             for (Account account : accountMap.values()) {
-                List<Transaction> transactions = getTransactionsForAccount(account.getAccountId());
+                List<Transaction> transactions = getTransactionsForAccount(connection, account.getAccountId());
                 if (!transactions.isEmpty()) {
                     account.setTransaction(transactions);
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to get customers and accounts and transactions");
+            throw new SQLException("Failed to retrieve customers accounts and transactions");
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
             }
         }
         return new ArrayList<>(customerMap.values());
+    }
+
+    public List<Transaction> getTransactionsForAccount(Connection connection, UUID accountId) throws SQLException {
+        List<Transaction> transactions = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement
+                (AccountSqlQueries.GET_ACCOUNT_TRANSACTIONS_BY_ID)) {
+            ps.setString(1, accountId.toString());
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                transactions.add(new Transaction(rs));
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Failed to retrieve transactions for account with id: " + accountId + e.getMessage());
+        }
+        return transactions;
     }
 
     public List<Customer> getCustomerAccountsCardsById(UUID customerId) throws SQLException {
@@ -443,29 +391,26 @@ public class CustomerService {
                 String customerIdStr = rs.getString("customer_id");
                 String accountIdStr = rs.getString("account_id");
                 if (customerIdStr != null && !customerIdStr.isEmpty()) {
-                    UUID customerIdd = UUID.fromString(customerIdStr);
-                    customerMap.putIfAbsent(customerIdd, new Customer(rs));
+                    UUID customerUuid = UUID.fromString(customerIdStr);
+                    customerMap.putIfAbsent(customerUuid, new Customer(rs));
                     if (accountIdStr != null && !accountIdStr.isEmpty() && !accountMap.containsKey(UUID.fromString(accountIdStr))) {
-                        UUID accountId = UUID.fromString(accountIdStr);
-                        Account accountModel = new Account(rs);
-                        customerMap.get(customerIdd).addAccount(accountModel);
-                        accountMap.putIfAbsent(accountId, accountModel);
+                        UUID accountUuid = UUID.fromString(accountIdStr);
+                        Account account = new Account(rs);
+                        customerMap.get(customerUuid).addAccount(account);
+                        accountMap.putIfAbsent(accountUuid, account);
                     }
                 } else {
-                    System.out.println("Null or empty customer ID found in the ResultSet");
+                    throw new SQLException("Null or empty customer ID found");
                 }
             }
-            System.out.println("Accounts of customers retrieved successfully.");
-
             for (Account account : accountMap.values()) {
-                List<Card> cards = getCardsForAccountsById(account.getAccountId());
+                List<Card> cards = getCardsForAccounts(connection, account.getAccountId());
                 if (!cards.isEmpty()) {
                     account.setCards(cards);
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to get customers and accounts and cards");
+            throw new SQLException("Failed to retrieve customers cards and transactions");
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -474,8 +419,46 @@ public class CustomerService {
         return new ArrayList<>(customerMap.values());
     }
 
-    public List<Card> getCardsForAccountsById(UUID accountId) throws SQLException {
+    public List<Customer> getCustomersAccountsCards() throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
+        Map<UUID, Customer> customerMap = new HashMap<>();
+        Map<UUID, Account> accountMap = new HashMap<>();
+        try (PreparedStatement ps = connection.prepareStatement
+                (CustomerSqlQueries.GET_CUSTOMERS_ACCOUNTS)) {
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String customerIdStr = rs.getString("customer_id");
+                String accountIdStr = rs.getString("account_id");
+                if (customerIdStr != null && !customerIdStr.isEmpty()) {
+                    UUID customerUuid = UUID.fromString(customerIdStr);
+                    customerMap.putIfAbsent(customerUuid, new Customer(rs));
+                    if (accountIdStr != null && !accountIdStr.isEmpty() && !accountMap.containsKey(UUID.fromString(accountIdStr))) {
+                        UUID accountUuid = UUID.fromString(accountIdStr);
+                        Account account = new Account(rs);
+                        customerMap.get(customerUuid).addAccount(account);
+                        accountMap.putIfAbsent(accountUuid, account);
+                    }
+                } else {
+                    throw new SQLException("Null or empty customer ID found");
+                }
+            }
+            for (Account account : accountMap.values()) {
+                List<Card> cards = getCardsForAccounts(connection, account.getAccountId());
+                if (!cards.isEmpty()) {
+                    account.setCards(cards);
+                }
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Failed to retrieve customers cards and transactions");
+        } finally {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
+        return new ArrayList<>(customerMap.values());
+    }
+
+    public List<Card> getCardsForAccounts(Connection connection, UUID accountId) throws SQLException {
         List<Card> cards = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement
                 (AccountSqlQueries.GET_ACCOUNT_CARDS_BY_ID)) {
@@ -484,53 +467,10 @@ public class CustomerService {
             while (rs.next()) {
                 cards.add(new Card(rs));
             }
-            System.out.println("Cards retrieved successfully!");
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Error retrieving cards by ID: " + accountId);
+            throw new SQLException("Failed to retrieve cards for account with id: " + accountId + e.getMessage());
         }
         return cards;
-    }
-
-    public List<Customer> getCustomersAccountsCards() throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
-        Map<UUID, Customer> customerMap = new HashMap<>();
-        Map<UUID, Account> accountMap = new HashMap<>();
-        try (PreparedStatement ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMERS_ACCOUNTS)) {
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                String customerIdStr = rs.getString("customer_id");
-                String accountIdStr = rs.getString("account_id");
-                if (customerIdStr != null && !customerIdStr.isEmpty()) {
-                    UUID customerIdd = UUID.fromString(customerIdStr);
-                    customerMap.putIfAbsent(customerIdd, new Customer(rs));
-                    if (accountIdStr != null && !accountIdStr.isEmpty() && !accountMap.containsKey(UUID.fromString(accountIdStr))) {
-                        UUID accountId = UUID.fromString(accountIdStr);
-                        Account accountModel = new Account(rs);
-                        customerMap.get(customerIdd).addAccount(accountModel);
-                        accountMap.putIfAbsent(accountId, accountModel);
-                    }
-                } else {
-                    System.out.println("Null or empty customer ID found");
-                }
-            }
-            System.out.println("Accounts of customers retrieved successfully.");
-
-            for (Account account : accountMap.values()) {
-                List<Card> cards = getCardsForAccountsById(account.getAccountId());
-                if (!cards.isEmpty()) {
-                    account.setCards(cards);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to get customers and accounts and cards");
-        } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
-        }
-        return new ArrayList<>(customerMap.values());
     }
 
     public String getCustomerFirstNameById(UUID customerId) throws SQLException {
@@ -543,9 +483,7 @@ public class CustomerService {
                 return rs.getString(1);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Error retrieving customers and accounts");
-            throw e;
+            throw new SQLException("Failed to retrieve customer first name by id: " + customerId + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();

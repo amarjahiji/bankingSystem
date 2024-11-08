@@ -46,7 +46,6 @@ public class AccountSqlQueries {
             "select id as card_id, " +
                     "card_number, " +
                     "card_expiry_date, " +
-                    "card_holder_name, " +
                     "card_cvv, " +
                     "card_type_id, " +
                     "account_id " +

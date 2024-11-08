@@ -22,10 +22,8 @@ public class CardTypeService {
                 CardType newCardTypes = new CardType(rs);
                 cardTypes.add(newCardTypes);
             }
-            System.out.println("Card retrieved successfully");
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to get the card types");
+            throw new SQLException("No cards found" + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();

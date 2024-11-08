@@ -2,8 +2,6 @@ package org.bankingSystem.model;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class Transaction {
@@ -12,7 +10,6 @@ public class Transaction {
     private Float transactionAmount;
     private String transactionDate;
     private UUID accountId;
-    private List<CardType> cardType = new ArrayList<>();
 
     public Transaction(ResultSet rs) throws SQLException {
         this.transactionId = UUID.fromString(rs.getString("transaction_id"));

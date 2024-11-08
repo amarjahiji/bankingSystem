@@ -18,98 +18,164 @@ public class AccountResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAccounts() throws SQLException {
-        List<Account> accounts = ACCOUNT_SERVICE
-                .getAccounts();
-        String json = GSON.toJson(accounts);
-        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    public Response getAccounts() {
+        try {
+            List<Account> accounts = ACCOUNT_SERVICE.getAccounts();
+            if (!accounts.isEmpty()) {
+                String json = GSON.toJson(accounts);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Accounts not found").build();
+            }
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAccountById(@PathParam("id") UUID accountId) throws SQLException {
-        Account account = ACCOUNT_SERVICE
-                .getAccountById(accountId);
-        if (account == null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                    .entity("Account not found").build();
+    public Response getAccountById(@PathParam("id") UUID accountId) {
+        try {
+            Account account = ACCOUNT_SERVICE.getAccountById(accountId);
+            if (account != null) {
+                String json = GSON.toJson(account);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Account with id: " + accountId + "not found").build();
+            }
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
         }
-        String json = GSON.toJson(account);
-        return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
-
 
     @Path("/add/secured")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response createAccount(String payload) throws SQLException {
-        Account account = GSON.fromJson(payload, Account.class);
-        Account updatedAccount = ACCOUNT_SERVICE
-                .createAccount(account);
-        String json = GSON.toJson(updatedAccount);
-        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    public Response createAccount(String payload) {
+        try {
+            Account account = GSON.fromJson(payload, Account.class);
+            Account createdAccount = ACCOUNT_SERVICE.createAccount(account);
+            if (createdAccount != null) {
+                String json = GSON.toJson(createdAccount);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            } else {
+                return Response.status(Response.Status.NO_CONTENT)
+                        .entity("Account did not get created").build();
+            }
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 
     @Path("/update/secured/{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateAccountById(@PathParam("id") UUID accountId, String payload) throws SQLException {
-        Account account = GSON.fromJson(payload, Account.class);
-        Account updatedAccount = ACCOUNT_SERVICE.
-                updateAccountById(accountId, account);
-        String json = GSON.toJson(updatedAccount);
-        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    public Response updateAccountById(@PathParam("id") UUID accountId, String payload) {
+        try {
+            Account account = GSON.fromJson(payload, Account.class);
+            Account updatedAccount = ACCOUNT_SERVICE.updateAccountById(accountId, account);
+            if (updatedAccount != null) {
+                String json = GSON.toJson(updatedAccount);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            } else {
+                return Response.status(Response.Status.NO_CONTENT).entity("Account with id: " + accountId + "did not get updated").build();
+            }
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 
     @Path("/dateclosed/update/secured/{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateAccountDateClosedById(@PathParam("id") UUID accountId, String payload) throws SQLException {
-        Account account = GSON.fromJson(payload, Account.class);
-        Account updatedAccount = ACCOUNT_SERVICE.
-                updateAccountDateClosedById(accountId, account);
-        String json = GSON.toJson(updatedAccount);
-        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    public Response updateAccountDateClosedById(@PathParam("id") UUID accountId, String payload) {
+        try {
+            Account account = GSON.fromJson(payload, Account.class);
+            Account updatedAccount = ACCOUNT_SERVICE.updateAccountDateClosedById(accountId, account);
+            if (updatedAccount != null) {
+                String json = GSON.toJson(updatedAccount);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            } else {
+                return Response.status(Response.Status.NO_CONTENT).entity("Accounts with id: " + accountId + "date closed did not get updated").build();
+            }
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 
     @Path("/balance/update/secured/{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateAccountCurrentBalanceById(@PathParam("id") UUID accountId, String payload) throws SQLException {
-        Account account = GSON.fromJson(payload, Account.class);
-        Account updatedAccount = ACCOUNT_SERVICE.
-                updateAccountCurrentBalanceById(accountId, account);
-        String json = GSON.toJson(updatedAccount);
-        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    public Response updateAccountCurrentBalanceById(@PathParam("id") UUID accountId, String payload) {
+        try {
+            Account account = GSON.fromJson(payload, Account.class);
+            Account updatedAccount = ACCOUNT_SERVICE.updateAccountCurrentBalanceById(accountId, account);
+            if (updatedAccount != null) {
+                String json = GSON.toJson(updatedAccount);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            } else {
+                return Response.status(Response.Status.NO_CONTENT).entity("Accounts with id: " + accountId + "current balance did not get updated").build();
+            }
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 
     @Path("/status/update/secured/{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response updateAccountStatusById(@PathParam("id") UUID accountId, String payload) throws SQLException {
-        Account account = GSON.fromJson(payload, Account.class);
-        Account updatedAccount = ACCOUNT_SERVICE
-                .updateAccountStatusById(accountId, account);
-        String json = GSON.toJson(updatedAccount);
-        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    public Response updateAccountStatusById(@PathParam("id") UUID accountId, String payload) {
+        try {
+            Account account = GSON.fromJson(payload, Account.class);
+            Account updatedAccount = ACCOUNT_SERVICE.updateAccountStatusById(accountId, account);
+            if (updatedAccount != null) {
+                String json = GSON.toJson(updatedAccount);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            } else {
+                return Response.status(Response.Status.NO_CONTENT).entity("Accounts with id: " + accountId + " status did not get updated").build();
+            }
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 
     @DELETE
     @Path("/delete/secured/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteAccountById(@PathParam("id") UUID accountId) throws SQLException {
-        boolean isDeleted = ACCOUNT_SERVICE
-                .deleteAccountById(accountId);
-        if (isDeleted) {
-            return Response.ok("Account deleted successfully.").build();
-        } else {
-            return Response.status(Response.Status.NOT_FOUND).entity("Account not found").build();
+    public Response deleteAccountById(@PathParam("id") UUID accountId) {
+        try {
+            boolean isDeleted = ACCOUNT_SERVICE.deleteAccountById(accountId);
+            if (isDeleted) {
+                return Response.ok("Account deleted successfully.").build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).entity("Account not deleted").build();
+            }
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
         }
     }
 
@@ -117,13 +183,18 @@ public class AccountResource {
     @Path("accountnumber/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getAccountNumberById(@PathParam("id") UUID accountId) throws SQLException {
-        String accountNumber = ACCOUNT_SERVICE
-                .getAccountNumberById(accountId);
-        if (accountNumber == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity("No Account Number found").build();
+    public Response getAccountNumberById(@PathParam("id") UUID accountId) {
+        try {
+            String accountNumber = ACCOUNT_SERVICE.getAccountNumberById(accountId);
+            if (accountNumber != null) {
+                String json = GSON.toJson(accountNumber);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            }
+            return Response.status(Response.Status.NOT_FOUND).entity("First Name by id :" + accountId + "Not Found").build();
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
         }
-        String json = GSON.toJson(accountNumber);
-        return Response.ok(json, MediaType.APPLICATION_JSON).build();
     }
 }

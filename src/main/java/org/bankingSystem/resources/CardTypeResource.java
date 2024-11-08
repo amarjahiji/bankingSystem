@@ -19,10 +19,19 @@ public class CardTypeResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getCardTypes() throws SQLException {
-        List<CardType> cardTypeModels = CARD_TYPE_SERVICE
-                .getCardTypes();
-        String json = GSON.toJson(cardTypeModels);
-        return Response.ok(json, MediaType.APPLICATION_JSON).build();
+    public Response getCardTypes() {
+        try {
+            List<CardType> cardTypeModels = CARD_TYPE_SERVICE.getCardTypes();
+            if (!cardTypeModels.isEmpty()) {
+                String json = GSON.toJson(cardTypeModels);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND).entity("No card Types found").build();
+            }
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
+        }
     }
 }

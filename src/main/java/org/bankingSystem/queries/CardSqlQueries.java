@@ -6,7 +6,6 @@ public class CardSqlQueries {
             "select id as card_id, " +
                     "card_number, " +
                     "card_expiry_date, " +
-                    "card_holder_name, " +
                     "card_cvv, " +
                     "card_type_id, " +
                     "account_id " +
@@ -17,7 +16,6 @@ public class CardSqlQueries {
             "select id as card_id, " +
                     "card_number, " +
                     "card_expiry_date, " +
-                    "card_holder_name, " +
                     "card_cvv, " +
                     "card_type_id, " +
                     "account_id " +
@@ -27,7 +25,6 @@ public class CardSqlQueries {
     public static final String GET_CARDS_CARD_TYPE =
             "select c.id as card_id, " +
                     "c.card_number, " +
-                    "c.card_holder_name, " +
                     "c.card_cvv, " +
                     "ct.card_type_name, " +
                     "c.card_expiry_date, " +
@@ -42,7 +39,6 @@ public class CardSqlQueries {
     public static final String GET_CARD_CARD_TYPE_BY_ID =
             "select c.id as card_id, " +
                     "c.card_number, " +
-                    "c.card_holder_name, " +
                     "c.card_cvv, " +
                     "ct.card_type_name, " +
                     "c.card_expiry_date, " +
@@ -59,11 +55,10 @@ public class CardSqlQueries {
                     "(id, " +
                     "card_number, " +
                     "card_expiry_date, " +
-                    "card_holder_name, " +
                     "card_cvv, " +
                     "card_type_id, " +
                     "account_id) " +
-                    "values (?,?,?,?,?,?,?)";
+                    "values (?,?,?,?,?,?)";
 
     public static final String UPDATE_CARD_EXPIRY_DATE_BY_ID =
             "update cards " +
@@ -74,7 +69,6 @@ public class CardSqlQueries {
             "update cards " +
                     "set card_number = ?, " +
                     "card_expiry_date = ?, " +
-                    "card_holder_name= ?, " +
                     "card_cvv = ?, " +
                     "card_type_id = ?, " +
                     "account_id = ? " +

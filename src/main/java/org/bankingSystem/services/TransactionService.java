@@ -20,10 +20,8 @@ public class TransactionService {
                 Transaction newTransaction = new Transaction(rs);
                 transactions.add(newTransaction);
             }
-            System.out.println("Transactions retrieved successfully");
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to get transactions");
+            throw new SQLException("No transactions found" + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -42,11 +40,8 @@ public class TransactionService {
             if (rs.next()) {
                 return new Transaction(rs);
             }
-            System.out.println("Transaction " + transactionId + " retrieved successfully");
         } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("Failed to get transaction with id " + transactionId);
-            throw e;
+            throw new SQLException("No transaction with id : " + transactionId + "found" + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -66,12 +61,11 @@ public class TransactionService {
             ps.setString(4, transactions.getTransactionDate());
             ps.setString(5, transactions.getAccountId().toString());
             int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Insert successful!");
+            if (rowsAffected < 1) {
+                throw new SQLException("No rows affected trying to create a transaction");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to create transaction");
+            throw new SQLException("Error while creating a transaction" + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();

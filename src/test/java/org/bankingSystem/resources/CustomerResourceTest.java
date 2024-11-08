@@ -11,7 +11,7 @@ class CustomerResourceTest {
 
     @Test
     void getCustomers() throws SQLException {
-        Response response = new CustomerResource().getCustomers();
+        Response response = new CustomerResource().getAllCustomers();
         System.out.println(response.getEntity());
     }
 

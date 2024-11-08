@@ -23,10 +23,8 @@ public class AccountService {
                 Account accountModel = new Account(rs);
                 accounts.add(accountModel);
             }
-            System.out.println("Accounts retrieved successfully");
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to retrieve accounts");
+            throw new SQLException("Failed to retrieve accounts" + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -44,10 +42,8 @@ public class AccountService {
             if (rs.next()) {
                 return new Account(rs);
             }
-            System.out.println("Account with id " + accountId + " retrieved successfully");
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to retrieve account with id: " + accountId);
+            throw new SQLException("Failed to retrieve account by id" + accountId + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -70,12 +66,11 @@ public class AccountService {
             ps.setString(7, accountModel.getAccountStatus());
             ps.setString(8, accountModel.getCustomerId().toString());
             int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Account created successfully");
+            if (rowsAffected < 1) {
+                throw new SQLException("No rows affected trying to create account");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to create account");
+            throw new SQLException("Failed to create account" + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -84,31 +79,30 @@ public class AccountService {
         return accountModel;
     }
 
-    public Account updateAccountById(UUID accountId, Account accountModel) throws SQLException {
+    public Account updateAccountById(UUID accountId, Account account) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         try (PreparedStatement ps = connection.prepareStatement
                 (AccountSqlQueries.UPDATE_ACCOUNT_BY_ID)) {
-            ps.setString(1, accountModel.getAccountNumber());
-            ps.setString(2, accountModel.getAccountType());
-            ps.setDouble(3, accountModel.getAccountCurrentBalance());
-            ps.setString(4, accountModel.getAccountDateOpened());
-            ps.setString(5, accountModel.getAccountDateClosed());
-            ps.setString(6, accountModel.getAccountStatus());
-            ps.setString(7, accountModel.getCustomerId().toString());
+            ps.setString(1, account.getAccountNumber());
+            ps.setString(2, account.getAccountType());
+            ps.setDouble(3, account.getAccountCurrentBalance());
+            ps.setString(4, account.getAccountDateOpened());
+            ps.setString(5, account.getAccountDateClosed());
+            ps.setString(6, account.getAccountStatus());
+            ps.setString(7, account.getCustomerId().toString());
             ps.setString(8, accountId.toString());
             int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Update successful!");
+            if (rowsAffected < 1) {
+                throw new SQLException("No rows affected trying to update account with id : " + accountId);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to update account");
+            throw new SQLException("Failed to update account with id: " + accountId + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
             }
         }
-        return accountModel;
+        return account;
     }
 
     public Account updateAccountDateClosedById(UUID accountId, Account accountModel) throws SQLException {
@@ -118,12 +112,11 @@ public class AccountService {
             ps.setString(1, accountModel.getAccountDateClosed());
             ps.setString(2, accountId.toString());
             int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Successfully updated the account date closed");
+            if (rowsAffected < 1) {
+                throw new SQLException("No rows affected trying to update date closed of account with id : " + accountId);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to update the account date closed");
+            throw new SQLException("Failed to update account date closed  of account : " + accountId + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -139,12 +132,11 @@ public class AccountService {
             ps.setDouble(1, accountModel.getAccountCurrentBalance());
             ps.setString(2, accountId.toString());
             int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Successfully updated the account current balance");
+            if (rowsAffected < 1) {
+                throw new SQLException("No rows affected trying to update current balance of account with id : " + accountId);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to update the account current balance");
+            throw new SQLException("Failed to update account current balance of account : " + accountId + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -160,12 +152,11 @@ public class AccountService {
             ps.setString(1, accountModel.getAccountStatus());
             ps.setString(2, accountId.toString());
             int rowsAffected = ps.executeUpdate();
-            if (rowsAffected > 0) {
-                System.out.println("Successfully updated the account status");
+            if (rowsAffected < 1) {
+                throw new SQLException("No rows affected trying to update status of account with id : " + accountId);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to update the account status");
+            throw new SQLException("Failed to update account status of account : " + accountId + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -181,27 +172,31 @@ public class AccountService {
             try (PreparedStatement ps = connection.prepareStatement
                     (AccountSqlQueries.DELETE_ACCOUNT_ID_ON_CARDS)) {
                 ps.setString(1, accountId.toString());
-                ps.executeUpdate();
+                int rowsAffected = ps.executeUpdate();
+                if (rowsAffected < 1) {
+                    throw new SQLException("No rows affected trying to delete card");
+                }
             }
             try (PreparedStatement ps = connection.prepareStatement
                     (AccountSqlQueries.DELETE_ACCOUNT_ID_ON_TRANSACTIONS)) {
                 ps.setString(1, accountId.toString());
-                ps.executeUpdate();
+                int rowsAffected = ps.executeUpdate();
+                if (rowsAffected < 1) {
+                    throw new SQLException("No rows affected trying to delete transaction");
+                }
             }
             try (PreparedStatement ps = connection.prepareStatement
                     (AccountSqlQueries.DELETE_ACCOUNT_BY_ID)) {
                 ps.setString(1, accountId.toString());
                 int rowsAffected = ps.executeUpdate();
-                if (rowsAffected > 0) {
-                    System.out.println("Successfully deleted the account with id: " + accountId);
+                if (rowsAffected < 1) {
+                    throw new SQLException("No rows affected trying to delete account");
                 }
             }
             connection.commit();
         } catch (SQLException e) {
             connection.rollback();
-            e.printStackTrace();
-            System.out.println("Failed to delete the account with id: " + accountId);
-            return false;
+            throw new SQLException("Failed to delete account with id: " + accountId + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
@@ -220,11 +215,8 @@ public class AccountService {
             if (rs.next()) {
                 return rs.getString("account_number");
             }
-            System.out.println("Account number of user with id " + accountId + " retrieved successfully");
         } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Failed to retrieve account number of user with id " + accountId);
-            throw e;
+            throw new SQLException("Failed to retrieve account number of account with id " + accountId + e.getMessage());
         } finally {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
