@@ -14,8 +14,8 @@ public class CardService {
         try (Statement st = connection.createStatement();
              ResultSet rs = st.executeQuery(CardSqlQueries.GET_CARDS)) {
             while (rs.next()) {
-                Card CardModel = new Card(rs);
-                cards.add(CardModel);
+                Card card = new Card(rs);
+                cards.add(card);
             }
         } catch (SQLException e) {
             throw new SQLException("Failed to retrieve cards." + e.getMessage());

@@ -86,6 +86,29 @@ public class CustomerResource {
         }
     }
 
+    @Path("/age/{first}/{second}")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getCustomersOfCertainAge(@PathParam("first") String lowerBound, @PathParam("second") String upperBound) {
+        try {
+            List<Customer> customers = CUSTOMER_SERVICE.getCustomersOfCertainAge(lowerBound, upperBound);
+            Integer totalNumber = CUSTOMER_SERVICE.getTotalNumberOfCertainAgeCustomers(lowerBound , upperBound);
+            if (!customers.isEmpty()) {
+                CountCustomer countCustomers = new CountCustomer(totalNumber, customers);
+                String json = GSON.toJson(countCustomers);
+                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("No customer of such age limits found")
+                        .build();
+            }
+        } catch (SQLException e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(e.getMessage())
+                    .build();
+        }
+    }
+
     @Path("/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)

@@ -102,11 +102,11 @@ public class AccountService {
         return account;
     }
 
-    public Account updateAccountDateClosedById(UUID accountId, Account accountModel) throws SQLException {
+    public Account updateAccountDateClosedById(UUID accountId, Account account) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         try (PreparedStatement ps = connection.prepareStatement
                 (AccountSqlQueries.UPDATE_ACCOUNT_DATE_CLOSED_BY_ID)) {
-            ps.setString(1, accountModel.getAccountDateClosed());
+            ps.setString(1, account.getAccountDateClosed());
             ps.setString(2, accountId.toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
@@ -119,14 +119,14 @@ public class AccountService {
                 connection.close();
             }
         }
-        return accountModel;
+        return account;
     }
 
-    public Account updateAccountCurrentBalanceById(UUID accountId, Account accountModel) throws SQLException {
+    public Account updateAccountCurrentBalanceById(UUID accountId, Account account) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         try (PreparedStatement ps = connection.prepareStatement
                 (AccountSqlQueries.UPDATE_ACCOUNT_CURRENT_BALANCE_BY_ID)) {
-            ps.setDouble(1, accountModel.getAccountCurrentBalance());
+            ps.setDouble(1, account.getAccountCurrentBalance());
             ps.setString(2, accountId.toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
@@ -139,14 +139,14 @@ public class AccountService {
                 connection.close();
             }
         }
-        return accountModel;
+        return account;
     }
 
-    public Account updateAccountStatusById(UUID accountId, Account accountModel) throws SQLException {
+    public Account updateAccountStatusById(UUID accountId, Account account) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         try (PreparedStatement ps = connection.prepareStatement
                 (AccountSqlQueries.UPDATE_ACCOUNT_STATUS_BY_ID)) {
-            ps.setString(1, accountModel.getAccountStatus());
+            ps.setString(1, account.getAccountStatus());
             ps.setString(2, accountId.toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
@@ -159,7 +159,7 @@ public class AccountService {
                 connection.close();
             }
         }
-        return accountModel;
+        return account;
     }
 
     public boolean deleteAccountById(UUID accountId) throws SQLException {

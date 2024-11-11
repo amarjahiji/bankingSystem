@@ -12,7 +12,7 @@ public class AccountSqlQueries {
                     "account_status, " +
                     "customer_id " +
                     "from accounts " +
-                    "order by account_date_opened asc";
+                    "order by account_date_opened desc";
 
     public static final String GET_ACCOUNT_BY_ID =
             "select id as account_id, " +
@@ -25,7 +25,7 @@ public class AccountSqlQueries {
                     "customer_id " +
                     "from accounts " +
                     "where id = ? " +
-                    "order by account_date_opened asc";
+                    "order by account_date_opened desc";
 
 
     public static final String GET_ACCOUNT_NUMBER_BY_ID =

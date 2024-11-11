@@ -44,6 +44,29 @@ public class CustomerService {
         return getCustomers(CustomerSqlQueries.GET_YOUNG_CUSTOMERS);
     }
 
+    public List<Customer> getCustomersOfCertainAge(String firstValue, String secondValue) throws SQLException {
+        Connection connection = DatabaseConnector.getConnection();
+        List<Customer> customers = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement
+                (CustomerSqlQueries.GET_CERTAIN_AGE_CUSTOMERS)) {
+            ps.setString(1, firstValue);
+            ps.setString(2, secondValue);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Customer customer = new Customer(rs);
+                customers.add(customer);
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get customers" +
+                    e.getMessage());
+        } finally {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
+        return customers;
+    }
+
     public Integer getTotalNumberOfCustomers(String query) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         try (Statement st = connection.createStatement();
@@ -72,6 +95,27 @@ public class CustomerService {
 
     public Integer getTotalNumberOfYoungCustomers() throws SQLException {
         return getTotalNumberOfCustomers(CustomerSqlQueries.GET_TOTAL_NUMBER_OF_YOUNG_CUSTOMERS);
+    }
+
+    public Integer getTotalNumberOfCertainAgeCustomers(String firstValue, String secondValue) throws SQLException {
+        Connection connection = DatabaseConnector.getConnection();
+        try (PreparedStatement ps = connection.prepareStatement
+                (CustomerSqlQueries.GET_TOTAL_NUMBER_OF_CERTAIN_AGE_CUSTOMERS)) {
+            ps.setString(1, firstValue);
+            ps.setString(2, secondValue);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("total");
+            }
+        } catch (SQLException e) {
+            throw new SQLException("Failed to get total number of customers" +
+                    e.getMessage());
+        } finally {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        }
+        return 0;
     }
 
     public Customer getCustomerById(UUID customerId) throws SQLException {
@@ -122,7 +166,8 @@ public class CustomerService {
     public List<Customer> getCustomersAccounts() throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         Map<UUID, Customer> customerMap = new HashMap<>();
-        try (PreparedStatement ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMERS_ACCOUNTS);
+        try (PreparedStatement ps = connection.prepareStatement
+                (CustomerSqlQueries.GET_CUSTOMERS_ACCOUNTS);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 UUID customerId = UUID.fromString(rs.getString("customer_id"));
@@ -146,18 +191,18 @@ public class CustomerService {
         return sortedCustomers;
     }
 
-    public Customer createCustomer(Customer customerModel) throws SQLException {
+    public Customer createCustomer(Customer customer) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         try (PreparedStatement ps = connection.prepareStatement
                 (CustomerSqlQueries.CREATE_CUSTOMER)) {
             UUID uuid = UUID.randomUUID();
             ps.setString(1, uuid.toString());
-            ps.setString(2, customerModel.getCustomerFirstName());
-            ps.setString(3, customerModel.getCustomerLastName());
-            ps.setString(4, customerModel.getCustomerDateOfBirth());
-            ps.setString(5, customerModel.getCustomerEmail());
-            ps.setString(6, customerModel.getCustomerPhoneNumber());
-            ps.setString(7, customerModel.getCustomerAddress());
+            ps.setString(2, customer.getCustomerFirstName());
+            ps.setString(3, customer.getCustomerLastName());
+            ps.setString(4, customer.getCustomerDateOfBirth());
+            ps.setString(5, customer.getCustomerEmail());
+            ps.setString(6, customer.getCustomerPhoneNumber());
+            ps.setString(7, customer.getCustomerAddress());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to create a customer");
@@ -169,19 +214,19 @@ public class CustomerService {
                 connection.close();
             }
         }
-        return customerModel;
+        return customer;
     }
 
-    public Customer updateCustomerById(UUID customerId, Customer customerModel) throws SQLException {
+    public Customer updateCustomerById(UUID customerId, Customer customer) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         try (PreparedStatement ps = connection.prepareStatement
                 (CustomerSqlQueries.UPDATE_CUSTOMER_BY_ID)) {
-            ps.setString(1, customerModel.getCustomerFirstName());
-            ps.setString(2, customerModel.getCustomerLastName());
-            ps.setString(3, customerModel.getCustomerDateOfBirth());
-            ps.setString(4, customerModel.getCustomerEmail());
-            ps.setString(5, customerModel.getCustomerPhoneNumber());
-            ps.setString(6, customerModel.getCustomerAddress());
+            ps.setString(1, customer.getCustomerFirstName());
+            ps.setString(2, customer.getCustomerLastName());
+            ps.setString(3, customer.getCustomerDateOfBirth());
+            ps.setString(4, customer.getCustomerEmail());
+            ps.setString(5, customer.getCustomerPhoneNumber());
+            ps.setString(6, customer.getCustomerAddress());
             ps.setString(7, customerId.toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
@@ -194,14 +239,14 @@ public class CustomerService {
                 connection.close();
             }
         }
-        return customerModel;
+        return customer;
     }
 
-    public Customer updateCustomerAddressById(UUID customerId, Customer customerModel) throws SQLException {
+    public Customer updateCustomerAddressById(UUID customerId, Customer customer) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         try (PreparedStatement ps = connection.prepareStatement
                 (CustomerSqlQueries.UPDATE_CUSTOMER_ADDRESS_BY_ID)) {
-            ps.setString(1, customerModel.getCustomerAddress());
+            ps.setString(1, customer.getCustomerAddress());
             ps.setString(2, customerId.toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
@@ -214,14 +259,14 @@ public class CustomerService {
                 connection.close();
             }
         }
-        return customerModel;
+        return customer;
     }
 
-    public Customer updateCustomerEmailById(UUID customerId, Customer customerModel) throws SQLException {
+    public Customer updateCustomerEmailById(UUID customerId, Customer customer) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         try (PreparedStatement ps = connection.prepareStatement
                 (CustomerSqlQueries.UPDATE_CUSTOMER_EMAIL_BY_ID)) {
-            ps.setString(1, customerModel.getCustomerEmail());
+            ps.setString(1, customer.getCustomerEmail());
             ps.setString(2, customerId.toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
@@ -234,14 +279,14 @@ public class CustomerService {
                 connection.close();
             }
         }
-        return customerModel;
+        return customer;
     }
 
-    public Customer updateCustomerPhoneNumberById(UUID customerId, Customer customerModel) throws SQLException {
+    public Customer updateCustomerPhoneNumberById(UUID customerId, Customer customer) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         try (PreparedStatement ps = connection.prepareStatement
                 (CustomerSqlQueries.UPDATE_CUSTOMER_PHONE_NUMBER_BY_ID)) {
-            ps.setString(1, customerModel.getCustomerPhoneNumber());
+            ps.setString(1, customer.getCustomerPhoneNumber());
             ps.setString(2, customerId.toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
@@ -254,7 +299,7 @@ public class CustomerService {
                 connection.close();
             }
         }
-        return customerModel;
+        return customer;
     }
 
     public boolean deleteCustomerById(UUID customerId) throws SQLException {
@@ -306,9 +351,9 @@ public class CustomerService {
                     customerMap.putIfAbsent(customerUuid, new Customer(rs));
                     if (accountIdStr != null && !accountIdStr.isEmpty() && !accountMap.containsKey(UUID.fromString(accountIdStr))) {
                         UUID accountUuid = UUID.fromString(accountIdStr);
-                        Account accountModel = new Account(rs);
-                        customerMap.get(customerUuid).addAccount(accountModel);
-                        accountMap.putIfAbsent(accountUuid, accountModel);
+                        Account account = new Account(rs);
+                        customerMap.get(customerUuid).addAccount(account);
+                        accountMap.putIfAbsent(accountUuid, account);
                     }
                 } else {
                     throw new SQLException("Null or empty customer ID found");

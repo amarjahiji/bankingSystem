@@ -12,8 +12,8 @@ public class CardTypeService {
     public List<CardType> getCardTypes() throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         List<CardType> cardTypes = new ArrayList<>();
-        try (Statement ps = connection.createStatement();
-             ResultSet rs = ps.executeQuery(CardTypeSqlQueries.GET_CARD_TYPES)){
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery(CardTypeSqlQueries.GET_CARD_TYPES)){
             while (rs.next()) {
                 CardType newCardTypes = new CardType(rs);
                 cardTypes.add(newCardTypes);

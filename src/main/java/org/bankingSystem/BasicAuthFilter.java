@@ -21,8 +21,7 @@ public class BasicAuthFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        if (requestContext.getUriInfo().getPath()
-                .contains(SECURE_KEYWORD)) {
+        if (requestContext.getUriInfo().getPath().contains(SECURE_KEYWORD)) {
             String authHeader = requestContext.getHeaderString
                     (HttpHeaders.AUTHORIZATION);
             if (authHeader != null && authHeader.startsWith(AUTHORIZATION_HEADER_PREFIX)) {

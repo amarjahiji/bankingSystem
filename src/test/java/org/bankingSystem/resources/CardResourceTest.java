@@ -22,18 +22,6 @@ class CardResourceTest {
     }
 
     @Test
-    void getCardsCardType() throws SQLException {
-        Response response = new CardResource().getCardsCardType();
-        System.out.println(response.getEntity());
-    }
-
-    @Test
-    void getCardCardType() throws SQLException {
-        Response response = new CardResource().getCardCardTypeById(UUID.fromString("d1e7a3b5-e29b-41d4-a716-446655440000"));
-        System.out.println(response.getEntity());
-    }
-
-    @Test
     void createCard() throws SQLException {
         String payload = "{\n"
                 + "  \"cardId\": \"d1e7a3b5-e29b-41d4-a716-446655440000\",\n"
