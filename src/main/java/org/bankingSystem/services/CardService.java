@@ -2,25 +2,20 @@ package org.bankingSystem.services;
 
 import org.bankingSystem.DatabaseConnector;
 import org.bankingSystem.model.Card;
-import org.bankingSystem.model.CardType;
 import org.bankingSystem.queries.CardSqlQueries;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 
 public class CardService {
     public List<Card> getCards() throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        List<Card> Cards = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement
-                (CardSqlQueries.GET_CARDS);
-             ResultSet rs = ps.executeQuery()) {
+        List<Card> cards = new ArrayList<>();
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery(CardSqlQueries.GET_CARDS)) {
             while (rs.next()) {
                 Card CardModel = new Card(rs);
-                Cards.add(CardModel);
+                cards.add(CardModel);
             }
         } catch (SQLException e) {
             throw new SQLException("Failed to retrieve cards." + e.getMessage());
@@ -29,7 +24,7 @@ public class CardService {
                 connection.close();
             }
         }
-        return Cards;
+        return cards;
     }
 
     public Card getCardById(UUID cardId) throws SQLException {
@@ -49,55 +44,6 @@ public class CardService {
             }
         }
         return null;
-    }
-
-    public List<Card> getCardsCardType() throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
-        Map<UUID, Card> cardMap = new HashMap<>();
-        try (PreparedStatement ps = connection.prepareStatement
-                (CardSqlQueries.GET_CARDS_CARD_TYPE)) {
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                UUID cardId = UUID.fromString(rs.getString("card_id"));
-                cardMap.putIfAbsent(cardId, new Card(rs));
-                if (rs.getString("card_type_id") != null || !rs.getString("card_type").isEmpty()) {
-                    CardType cardType = new CardType(rs);
-                    cardMap.get(cardId).addCardType(cardType);
-                }
-            }
-        } catch (SQLException e) {
-            throw new SQLException("Failed to retrieve cards card type." + e.getMessage());
-        } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
-        }
-        return new ArrayList<>(cardMap.values());
-    }
-
-    public List<Card> getCardCardTypeById(UUID cardId) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
-        Map<UUID, Card> cardMap = new HashMap<>();
-        try (PreparedStatement st = connection.prepareStatement
-                (CardSqlQueries.GET_CARD_CARD_TYPE_BY_ID)) {
-            st.setString(1, cardId.toString());
-            ResultSet rs = st.executeQuery();
-            while (rs.next()) {
-                UUID cardIdd = UUID.fromString(rs.getString("card_id"));
-                cardMap.putIfAbsent(cardIdd, new Card(rs));
-                if (rs.getString("card_type_id") != null) {
-                    CardType cardType = new CardType(rs);
-                    cardMap.get(cardIdd).addCardType(cardType);
-                }
-            }
-        } catch (SQLException e) {
-            throw new SQLException("Failed to retrieve cards card type." + e.getMessage());
-        } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
-        }
-        return new ArrayList<>(cardMap.values());
     }
 
     public Card createCard(Card card) throws SQLException {

@@ -53,8 +53,7 @@ public class BasicAuthFilter implements ContainerRequestFilter {
             ResultSet rs = ps.executeQuery();
             return rs.next();
         } catch (SQLException e) {
-            System.out.println("Admin does not exist");
-            throw new RuntimeException(e);
+            throw new RuntimeException("Admin does not exist.", e);
         }
     }
 }

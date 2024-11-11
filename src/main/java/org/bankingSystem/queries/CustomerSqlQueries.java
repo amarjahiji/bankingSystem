@@ -9,7 +9,8 @@ public class CustomerSqlQueries {
                     "customer_email, " +
                     "customer_phone_number, " +
                     "customer_address " +
-                    "from customers";
+                    "from customers " +
+                    "order by customer_first_name";
 
     public static final String GET_TOTAL_NUMBER_OF_CUSTOMERS =
             "select count(*) as total from customers";
@@ -23,7 +24,8 @@ public class CustomerSqlQueries {
                     "customer_phone_number, " +
                     "customer_address " +
                     "from customers " +
-                    "where customer_date_of_birth < '1965-01-01'";
+                    "where customer_date_of_birth < '1965-01-01' " +
+                    "order by customer_first_name";
 
     public static final String GET_TOTAL_NUMBER_OF_OLD_CUSTOMERS =
             "select count(*) as total from customers " +
@@ -38,7 +40,8 @@ public class CustomerSqlQueries {
                     "customer_phone_number, " +
                     "customer_address " +
                     "from customers " +
-                    "where customer_date_of_birth > '2002-01-01'";
+                    "where customer_date_of_birth > '2002-01-01' " +
+                    "order by customer_first_name";
 
     public static final String GET_TOTAL_NUMBER_OF_YOUNG_CUSTOMERS =
             "select count(*) as total from customers " +

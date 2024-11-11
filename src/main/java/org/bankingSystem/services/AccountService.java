@@ -4,10 +4,7 @@ import org.bankingSystem.DatabaseConnector;
 import org.bankingSystem.model.Account;
 import org.bankingSystem.queries.AccountSqlQueries;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -16,12 +13,12 @@ public class AccountService {
     public List<Account> getAccounts() throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         List<Account> accounts = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement
-                (AccountSqlQueries.GET_ACCOUNTS);
-             ResultSet rs = ps.executeQuery()) {
+        try (Statement st = connection.createStatement();
+             ResultSet rs = st.executeQuery
+                     (AccountSqlQueries.GET_ACCOUNTS)) {
             while (rs.next()) {
-                Account accountModel = new Account(rs);
-                accounts.add(accountModel);
+                Account account = new Account(rs);
+                accounts.add(account);
             }
         } catch (SQLException e) {
             throw new SQLException("Failed to retrieve accounts" + e.getMessage());
@@ -52,19 +49,19 @@ public class AccountService {
         return null;
     }
 
-    public Account createAccount(Account accountModel) throws SQLException {
+    public Account createAccount(Account account) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         try (PreparedStatement ps = connection.prepareStatement
                 (AccountSqlQueries.CREATE_ACCOUNT)) {
             UUID uuid = UUID.randomUUID();
             ps.setString(1, uuid.toString());
-            ps.setString(2, accountModel.getAccountNumber());
-            ps.setString(3, accountModel.getAccountType());
-            ps.setDouble(4, accountModel.getAccountCurrentBalance());
-            ps.setString(5, accountModel.getAccountDateOpened());
-            ps.setString(6, accountModel.getAccountDateClosed());
-            ps.setString(7, accountModel.getAccountStatus());
-            ps.setString(8, accountModel.getCustomerId().toString());
+            ps.setString(2, account.getAccountNumber());
+            ps.setString(3, account.getAccountType());
+            ps.setDouble(4, account.getAccountCurrentBalance());
+            ps.setString(5, account.getAccountDateOpened());
+            ps.setString(6, account.getAccountDateClosed());
+            ps.setString(7, account.getAccountStatus());
+            ps.setString(8, account.getCustomerId().toString());
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to create account");
@@ -76,7 +73,7 @@ public class AccountService {
                 connection.close();
             }
         }
-        return accountModel;
+        return account;
     }
 
     public Account updateAccountById(UUID accountId, Account account) throws SQLException {

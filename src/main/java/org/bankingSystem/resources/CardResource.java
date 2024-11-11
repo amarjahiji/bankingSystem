@@ -21,7 +21,7 @@ public class CardResource {
     public Response getCards() {
         try {
             List<Card> cards = CARD_SERVICE.getCards();
-            if (cards.isEmpty()) {
+            if (!cards.isEmpty()) {
                 String json = GSON.toJson(cards);
                 return Response.ok(json, MediaType.APPLICATION_JSON).build();
             } else {
@@ -45,45 +45,6 @@ public class CardResource {
                 return Response.ok(json, MediaType.APPLICATION_JSON).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND).entity("Card with id: " + cardId + "not found").build();
-            }
-        } catch (SQLException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(e.getMessage())
-                    .build();
-        }
-    }
-
-    @Path("/cardtype")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getCardsCardType() {
-        try {
-            List<Card> cards = CARD_SERVICE.getCardsCardType();
-            if (!cards.isEmpty()) {
-                String json = GSON.toJson(cards);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Cards not found").build();
-            }
-        } catch (SQLException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(e.getMessage())
-                    .build();
-        }
-    }
-
-
-    @Path("/cardtype/{id}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getCardCardTypeById(@PathParam("id") UUID cardId) {
-        try {
-            List<Card> card = CARD_SERVICE.getCardCardTypeById(cardId);
-            if (!card.isEmpty()) {
-                String json = GSON.toJson(card);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Not found").build();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

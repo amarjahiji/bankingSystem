@@ -2,8 +2,6 @@ package org.bankingSystem.model;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 public class Card {
@@ -13,11 +11,6 @@ public class Card {
     private String cardCvv;
     private Integer cardTypeId;
     private UUID accountId;
-    private List<CardType> cardType;
-
-
-    public Card() {
-    }
 
     public Card(ResultSet rs) throws SQLException {
         this.cardId = UUID.fromString(rs.getString("card_id"));
@@ -26,14 +19,6 @@ public class Card {
         this.cardCvv = rs.getString("card_cvv");
         this.cardTypeId = rs.getInt("card_type_id");
         this.accountId = UUID.fromString(rs.getString("account_id"));
-    }
-
-    public Card(List<CardType> cardType) {
-        this.cardType = cardType;
-    }
-
-    public Card(CardType cardType) {
-        this.cardType = new ArrayList<>();
     }
 
     public UUID getCardId() {
@@ -84,18 +69,4 @@ public class Card {
         this.accountId = accountId;
     }
 
-    public List<CardType> getCardType() {
-        if (cardType == null) {
-            cardType = new ArrayList<>();
-        }
-        return cardType;
-    }
-
-    public void addCardType(CardType cardType) {
-        getCardType().add(cardType);
-    }
-
-    public void setCardType(List<CardType> cardType) {
-        this.cardType = cardType;
-    }
 }

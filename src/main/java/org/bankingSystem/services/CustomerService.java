@@ -122,8 +122,7 @@ public class CustomerService {
     public List<Customer> getCustomersAccounts() throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         Map<UUID, Customer> customerMap = new HashMap<>();
-        try (PreparedStatement ps = connection.prepareStatement
-                (CustomerSqlQueries.GET_CUSTOMERS_ACCOUNTS);
+        try (PreparedStatement ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMERS_ACCOUNTS);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 UUID customerId = UUID.fromString(rs.getString("customer_id"));
@@ -140,7 +139,11 @@ public class CustomerService {
                 connection.close();
             }
         }
-        return new ArrayList<>(customerMap.values());
+
+        List<Customer> sortedCustomers = new ArrayList<>(customerMap.values());
+        sortedCustomers.sort(Comparator.comparing(Customer::getCustomerFirstName));
+
+        return sortedCustomers;
     }
 
     public Customer createCustomer(Customer customerModel) throws SQLException {
@@ -362,7 +365,10 @@ public class CustomerService {
                 connection.close();
             }
         }
-        return new ArrayList<>(customerMap.values());
+        List<Customer> sortedCustomers = new ArrayList<>(customerMap.values());
+        sortedCustomers.sort(Comparator.comparing(Customer::getCustomerFirstName));
+
+        return sortedCustomers;
     }
 
     public List<Transaction> getTransactionsForAccount(Connection connection, UUID accountId) throws SQLException {
@@ -455,7 +461,10 @@ public class CustomerService {
                 connection.close();
             }
         }
-        return new ArrayList<>(customerMap.values());
+        List<Customer> sortedCustomers = new ArrayList<>(customerMap.values());
+        sortedCustomers.sort(Comparator.comparing(Customer::getCustomerFirstName));
+
+        return sortedCustomers;
     }
 
     public List<Card> getCardsForAccounts(Connection connection, UUID accountId) throws SQLException {

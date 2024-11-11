@@ -33,8 +33,7 @@ public class CardSqlQueries {
                     "ct.id as card_type_id " +
                     "from cards c " +
                     "left join card_types ct " +
-                    "on c.card_type_id = ct.id " +
-                    "order by c.card_expiry_date asc";
+                    "on c.card_type_id = ct.id";
 
     public static final String GET_CARD_CARD_TYPE_BY_ID =
             "select c.id as card_id, " +
