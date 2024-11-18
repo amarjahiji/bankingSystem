@@ -31,7 +31,8 @@ public class BasicAuthFilter implements ContainerRequestFilter {
                 StringTokenizer tokenizer = new StringTokenizer(decodedCredentials, ":");
                 String username = tokenizer.nextToken();
                 String password = tokenizer.nextToken();
-                if (checkDb(username, password)) {
+                //TODO make this token based (JWT), passwords shouldn't be transported
+                if (validateUserCredentials(username, password)) {
                     return;
                 }
             }
@@ -43,7 +44,7 @@ public class BasicAuthFilter implements ContainerRequestFilter {
         }
     }
 
-    private boolean checkDb(String username, String password) {
+    private boolean validateUserCredentials(String username, String password) {
         try (Connection connection = DatabaseConnector.getConnection()) {
             PreparedStatement ps = connection.prepareStatement
                     (AdminSqlQueries.GET_ADMINS);

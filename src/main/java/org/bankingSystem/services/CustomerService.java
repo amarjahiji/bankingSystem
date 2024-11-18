@@ -67,57 +67,6 @@ public class CustomerService {
         return customers;
     }
 
-    public Integer getTotalNumberOfCustomers(String query) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
-        try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery(query)) {
-            if (rs.next()) {
-                return rs.getInt("total");
-            }
-        } catch (SQLException e) {
-            throw new SQLException("Failed to get total number of customers" +
-                    e.getMessage());
-        } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
-        }
-        return 0;
-    }
-
-    public Integer getTotalNumberOfAllCustomers() throws SQLException {
-        return getTotalNumberOfCustomers(CustomerSqlQueries.GET_TOTAL_NUMBER_OF_CUSTOMERS);
-    }
-
-    public Integer getTotalNumberOfOldCustomers() throws SQLException {
-        return getTotalNumberOfCustomers(CustomerSqlQueries.GET_TOTAL_NUMBER_OF_OLD_CUSTOMERS);
-    }
-
-    public Integer getTotalNumberOfYoungCustomers() throws SQLException {
-        return getTotalNumberOfCustomers(CustomerSqlQueries.GET_TOTAL_NUMBER_OF_YOUNG_CUSTOMERS);
-    }
-
-    public Integer getTotalNumberOfCertainAgeCustomers(String firstValue, String secondValue) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement
-                (CustomerSqlQueries.GET_TOTAL_NUMBER_OF_CERTAIN_AGE_CUSTOMERS)) {
-            ps.setString(1, firstValue);
-            ps.setString(2, secondValue);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt("total");
-            }
-        } catch (SQLException e) {
-            throw new SQLException("Failed to get total number of customers" +
-                    e.getMessage());
-        } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
-        }
-        return 0;
-    }
-
     public Customer getCustomerById(UUID customerId) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         try (PreparedStatement ps = connection.prepareStatement

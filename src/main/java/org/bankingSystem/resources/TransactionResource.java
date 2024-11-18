@@ -12,9 +12,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Path("transaction")
-public class TransactionResource {
+public class TransactionResource extends AbstractResource {
     private final TransactionService TRANSACTION_SERVICE = new TransactionService();
-    private final Gson GSON = new Gson();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -22,10 +21,9 @@ public class TransactionResource {
         try {
             List<Transaction> transactions = TRANSACTION_SERVICE.getTransactions();
             if (!transactions.isEmpty()) {
-                String json = GSON.toJson(transactions);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return transactionsToJson(transactions, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("No transactions found").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -41,10 +39,9 @@ public class TransactionResource {
         try {
             Transaction transaction = TRANSACTION_SERVICE.getTransactionById(transactionId);
             if (transaction != null) {
-                String json = GSON.toJson(transaction);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return transactionToJson(transaction, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("No transaction found with id: " + transactionId).build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -59,13 +56,12 @@ public class TransactionResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createTransaction(String payload) {
         try {
-            Transaction transaction = GSON.fromJson(payload, Transaction.class);
+            Transaction transaction = transactionFromJson(payload);
             Transaction createdTransaction = TRANSACTION_SERVICE.createTransaction(transaction);
             if (createdTransaction != null) {
-                String json = GSON.toJson(createdTransaction);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return transactionToJson(createdTransaction, 200);
             } else {
-                return Response.status(Response.Status.NO_CONTENT).entity("Transaction not created").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

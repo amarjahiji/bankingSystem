@@ -1,6 +1,5 @@
 package org.bankingSystem.resources;
 
-import com.google.gson.Gson;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -12,9 +11,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Path("card")
-public class CardResource {
+public class CardResource extends AbstractResource {
     private final CardService CARD_SERVICE = new CardService();
-    private final Gson GSON = new Gson();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -22,10 +20,9 @@ public class CardResource {
         try {
             List<Card> cards = CARD_SERVICE.getCards();
             if (!cards.isEmpty()) {
-                String json = GSON.toJson(cards);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return cardsToJson(cards, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Cards not found").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -41,10 +38,9 @@ public class CardResource {
         try {
             Card card = CARD_SERVICE.getCardById(cardId);
             if (card != null) {
-                String json = GSON.toJson(card);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return cardToJson(card, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Card with id: " + cardId + "not found").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -59,13 +55,12 @@ public class CardResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createCard(String payload) {
         try {
-            Card card = GSON.fromJson(payload, Card.class);
+            Card card = cardFromJson(payload);
             Card createdCard = CARD_SERVICE.createCard(card);
             if (createdCard != null) {
-                String json = GSON.toJson(createdCard);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return cardToJson(createdCard, 200);
             } else {
-                return Response.status(Response.Status.NO_CONTENT).entity("Card not created").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -80,13 +75,12 @@ public class CardResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateCardById(@PathParam("id") UUID cardId, String payload) {
         try {
-            Card card = GSON.fromJson(payload, Card.class);
+            Card card = cardFromJson(payload);
             Card updatedCardModel = CARD_SERVICE.updateCardById(cardId, card);
             if (updatedCardModel != null) {
-                String json = GSON.toJson(updatedCardModel);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return cardToJson(updatedCardModel, 200);
             } else {
-                return Response.status(Response.Status.NO_CONTENT).entity("Card with id: " + cardId + "not updated").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -101,13 +95,12 @@ public class CardResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateCardExpiryDateById(@PathParam("id") UUID cardId, String payload) {
         try {
-            Card card = GSON.fromJson(payload, Card.class);
+            Card card = cardFromJson(payload);
             Card updatedCard = CARD_SERVICE.updateCardExpiryDateById(cardId, card);
             if (updatedCard != null) {
-                String json = GSON.toJson(updatedCard);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return cardToJson(updatedCard, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Card with id: " + cardId + "not updated").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -125,8 +118,7 @@ public class CardResource {
             if (isDeleted) {
                 return Response.ok("Card deleted successfully.").build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Card not found").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

@@ -1,6 +1,5 @@
 package org.bankingSystem.resources;
 
-import com.google.gson.Gson;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -12,9 +11,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Path("account")
-public class AccountResource {
+public class AccountResource extends AbstractResource {
     private final AccountService ACCOUNT_SERVICE = new AccountService();
-    private final Gson GSON = new Gson();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -22,11 +20,9 @@ public class AccountResource {
         try {
             List<Account> accounts = ACCOUNT_SERVICE.getAccounts();
             if (!accounts.isEmpty()) {
-                String json = GSON.toJson(accounts);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return accountToJson(accounts, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Accounts not found").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -42,11 +38,9 @@ public class AccountResource {
         try {
             Account account = ACCOUNT_SERVICE.getAccountById(accountId);
             if (account != null) {
-                String json = GSON.toJson(account);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return accountToJson(account, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Account with id: " + accountId + "not found").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -61,14 +55,12 @@ public class AccountResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createAccount(String payload) {
         try {
-            Account account = GSON.fromJson(payload, Account.class);
+            Account account = accountFromJson(payload);
             Account createdAccount = ACCOUNT_SERVICE.createAccount(account);
             if (createdAccount != null) {
-                String json = GSON.toJson(createdAccount);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return accountToJson(createdAccount, 200);
             } else {
-                return Response.status(Response.Status.NO_CONTENT)
-                        .entity("Account did not get created").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -83,13 +75,12 @@ public class AccountResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateAccountById(@PathParam("id") UUID accountId, String payload) {
         try {
-            Account account = GSON.fromJson(payload, Account.class);
+            Account account = accountFromJson(payload);
             Account updatedAccount = ACCOUNT_SERVICE.updateAccountById(accountId, account);
             if (updatedAccount != null) {
-                String json = GSON.toJson(updatedAccount);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return accountToJson(updatedAccount, 200);
             } else {
-                return Response.status(Response.Status.NO_CONTENT).entity("Account with id: " + accountId + "did not get updated").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -104,13 +95,12 @@ public class AccountResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateAccountDateClosedById(@PathParam("id") UUID accountId, String payload) {
         try {
-            Account account = GSON.fromJson(payload, Account.class);
+            Account account = accountFromJson(payload);
             Account updatedAccount = ACCOUNT_SERVICE.updateAccountDateClosedById(accountId, account);
             if (updatedAccount != null) {
-                String json = GSON.toJson(updatedAccount);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return accountToJson(updatedAccount, 200);
             } else {
-                return Response.status(Response.Status.NO_CONTENT).entity("Accounts with id: " + accountId + "date closed did not get updated").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -125,13 +115,12 @@ public class AccountResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateAccountCurrentBalanceById(@PathParam("id") UUID accountId, String payload) {
         try {
-            Account account = GSON.fromJson(payload, Account.class);
+            Account account = accountFromJson(payload);
             Account updatedAccount = ACCOUNT_SERVICE.updateAccountCurrentBalanceById(accountId, account);
             if (updatedAccount != null) {
-                String json = GSON.toJson(updatedAccount);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return accountToJson(updatedAccount, 200);
             } else {
-                return Response.status(Response.Status.NO_CONTENT).entity("Accounts with id: " + accountId + "current balance did not get updated").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -146,13 +135,12 @@ public class AccountResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateAccountStatusById(@PathParam("id") UUID accountId, String payload) {
         try {
-            Account account = GSON.fromJson(payload, Account.class);
+            Account account = accountFromJson(payload);
             Account updatedAccount = ACCOUNT_SERVICE.updateAccountStatusById(accountId, account);
             if (updatedAccount != null) {
-                String json = GSON.toJson(updatedAccount);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return accountToJson(updatedAccount, 200);
             } else {
-                return Response.status(Response.Status.NO_CONTENT).entity("Accounts with id: " + accountId + " status did not get updated").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -170,7 +158,7 @@ public class AccountResource {
             if (isDeleted) {
                 return Response.ok("Account deleted successfully.").build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Account not deleted").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -187,10 +175,9 @@ public class AccountResource {
         try {
             String accountNumber = ACCOUNT_SERVICE.getAccountNumberById(accountId);
             if (accountNumber != null) {
-                String json = GSON.toJson(accountNumber);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return accountNumberToJson(accountNumber, 200);
             }
-            return Response.status(Response.Status.NOT_FOUND).entity("First Name by id :" + accountId + "Not Found").build();
+            return notFound();
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(e.getMessage())

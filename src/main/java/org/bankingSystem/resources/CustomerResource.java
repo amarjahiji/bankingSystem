@@ -1,6 +1,5 @@
 package org.bankingSystem.resources;
 
-import com.google.gson.Gson;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -13,28 +12,25 @@ import java.util.List;
 import java.util.UUID;
 
 @Path("customer")
-public class CustomerResource {
+public class CustomerResource extends AbstractResource {
     private final CustomerService CUSTOMER_SERVICE = new CustomerService();
-    private final Gson GSON = new Gson();
+
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllCustomers() {
         try {
             List<Customer> customers = CUSTOMER_SERVICE.getAllCustomers();
-            Integer totalNumber = CUSTOMER_SERVICE.getTotalNumberOfAllCustomers();
+            Integer totalNumber = customers.size();
             if (!customers.isEmpty()) {
                 CountCustomer countCustomers = new CountCustomer(totalNumber, customers);
-                String json = GSON.toJson(countCustomers);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return countCustomerToJson(countCustomers, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("No customers found")
-                        .build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(e.getMessage())
+                    .entity("Something went wrong")
                     .build();
         }
     }
@@ -45,16 +41,12 @@ public class CustomerResource {
     public Response getOldCustomers() {
         try {
             List<Customer> customers = CUSTOMER_SERVICE.getOldCustomers();
-            Integer totalNumber = CUSTOMER_SERVICE.getTotalNumberOfOldCustomers();
+            Integer totalNumber = customers.size();
             if (!customers.isEmpty()) {
                 CountCustomer countCustomers = new CountCustomer(totalNumber, customers);
-                String json = GSON.toJson(countCustomers);
-                return Response.ok(json, MediaType.APPLICATION_JSON)
-                        .build();
+                return countCustomerToJson(countCustomers, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("No old customer found")
-                        .build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -69,15 +61,12 @@ public class CustomerResource {
     public Response getYoungCustomers() {
         try {
             List<Customer> customers = CUSTOMER_SERVICE.getYoungCustomers();
-            Integer totalNumber = CUSTOMER_SERVICE.getTotalNumberOfYoungCustomers();
+            Integer totalNumber = customers.size();
             if (!customers.isEmpty()) {
                 CountCustomer countCustomers = new CountCustomer(totalNumber, customers);
-                String json = GSON.toJson(countCustomers);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return countCustomerToJson(countCustomers, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("No old customer found")
-                        .build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -92,17 +81,15 @@ public class CustomerResource {
     public Response getCustomersOfCertainAge(@PathParam("first") String lowerBound, @PathParam("second") String upperBound) {
         try {
             List<Customer> customers = CUSTOMER_SERVICE.getCustomersOfCertainAge(lowerBound, upperBound);
-            Integer totalNumber = CUSTOMER_SERVICE.getTotalNumberOfCertainAgeCustomers(lowerBound , upperBound);
+            Integer totalNumber = customers.size();
             if (!customers.isEmpty()) {
                 CountCustomer countCustomers = new CountCustomer(totalNumber, customers);
-                String json = GSON.toJson(countCustomers);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return countCustomerToJson(countCustomers, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("No customer of such age limits found")
-                        .build();
+                return notFound();
             }
         } catch (SQLException e) {
+            //TODO google about Jersey REST Exception Mapper
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(e.getMessage())
                     .build();
@@ -116,14 +103,12 @@ public class CustomerResource {
         try {
             Customer customer = CUSTOMER_SERVICE.getCustomerById(customerId);
             if (customer != null) {
-                String json = GSON.toJson(customer);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return customerToJson(customer,200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("No customer found with id " + customerId)
-                        .build();
+                return notFound();
             }
         } catch (SQLException e) {
+            //TODO remove all exceptions like this, since these wil be handled from exception mapper
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(e.getMessage())
                     .build();
@@ -138,10 +123,10 @@ public class CustomerResource {
         try {
             List<Customer> customers = CUSTOMER_SERVICE.getCustomersAccounts();
             if (!customers.isEmpty()) {
-                String json = GSON.toJson(customers);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+
+                return customersToJson(customers, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Not found").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -157,10 +142,9 @@ public class CustomerResource {
         try {
             List<Customer> customers = CUSTOMER_SERVICE.getCustomerAccountsById(customerId);
             if (!customers.isEmpty()) {
-                String json = GSON.toJson(customers);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return customersToJson(customers, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Not found").build();
+            return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -176,13 +160,12 @@ public class CustomerResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response createCustomer(String payload) {
         try {
-            Customer customer = GSON.fromJson(payload, Customer.class);
+            Customer customer = customerFromJson(payload);
             Customer createdCustomer = CUSTOMER_SERVICE.createCustomer(customer);
             if (createdCustomer != null) {
-                String json = GSON.toJson(createdCustomer);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return customerToJson(createdCustomer, 200);
             } else {
-                return Response.status(Response.Status.NO_CONTENT).entity("Customer not created").build();
+            return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -197,13 +180,12 @@ public class CustomerResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateCustomerById(@PathParam("id") UUID customerId, String payload) {
         try {
-            Customer customer = GSON.fromJson(payload, Customer.class);
+            Customer customer = customerFromJson(payload);
             Customer updatedCustomer = CUSTOMER_SERVICE.updateCustomerById(customerId, customer);
             if (updatedCustomer != null) {
-                String json = GSON.toJson(updatedCustomer);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+               return customerToJson(updatedCustomer, 200);
             } else {
-                return Response.status(Response.Status.NO_CONTENT).entity("Customer with id: " + customerId + "did not get updated").build();
+            return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -218,13 +200,12 @@ public class CustomerResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateCustomerAddressById(@PathParam("id") UUID customerId, String payload) {
         try {
-            Customer customer = GSON.fromJson(payload, Customer.class);
+            Customer customer = customerFromJson(payload);
             Customer updatedCustomer = CUSTOMER_SERVICE.updateCustomerAddressById(customerId, customer);
             if (updatedCustomer != null) {
-                String json = GSON.toJson(updatedCustomer);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return customerToJson(updatedCustomer, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Not found").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -239,13 +220,12 @@ public class CustomerResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateCustomerEmailById(@PathParam("id") UUID customerId, String payload) {
         try {
-            Customer customer = GSON.fromJson(payload, Customer.class);
+            Customer customer = customerFromJson(payload);
             Customer updatedCustomer = CUSTOMER_SERVICE.updateCustomerEmailById(customerId, customer);
             if (updatedCustomer != null) {
-                String json = GSON.toJson(updatedCustomer);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return customerToJson(updatedCustomer, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Not found").build();
+            return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -260,14 +240,13 @@ public class CustomerResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateCustomerPhoneNumberById(@PathParam("id") UUID customerId, String payload) {
         try {
-            Customer customer = GSON.fromJson(payload, Customer.class);
+            Customer customer = customerFromJson(payload);
             Customer updatedCustomer = CUSTOMER_SERVICE
                     .updateCustomerPhoneNumberById(customerId, customer);
             if (updatedCustomer != null) {
-                String json = GSON.toJson(updatedCustomer);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return customerToJson(updatedCustomer, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Not found").build();
+            return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -286,8 +265,7 @@ public class CustomerResource {
             if (isDeleted) {
                 return Response.ok("Customer deleted successfully.").build();
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Customer not found").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -302,12 +280,11 @@ public class CustomerResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getCustomerAccountsTransactionsById(@PathParam("id") UUID customerId) {
         try {
-            List<Customer> customer = CUSTOMER_SERVICE.getCustomerAccountsTransactionsById(customerId);
-            if (!customer.isEmpty()) {
-                String json = GSON.toJson(customer);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            List<Customer> customers = CUSTOMER_SERVICE.getCustomerAccountsTransactionsById(customerId);
+            if (!customers.isEmpty()) {
+                return customersToJson(customers, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Not found").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -323,10 +300,9 @@ public class CustomerResource {
         try {
             List<Customer> customers = CUSTOMER_SERVICE.getCustomersAccountsTransactions();
             if (!customers.isEmpty()) {
-                String json = GSON.toJson(customers);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return customersToJson(customers, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Not found").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -342,10 +318,9 @@ public class CustomerResource {
         try {
             List<Customer> customer = CUSTOMER_SERVICE.getCustomerAccountsCardsById(customerId);
             if (!customer.isEmpty()) {
-                String json = GSON.toJson(customer);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return customersToJson(customer, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Not found").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -361,10 +336,9 @@ public class CustomerResource {
         try {
             List<Customer> customers = CUSTOMER_SERVICE.getCustomersAccountsCards();
             if (!customers.isEmpty()) {
-                String json = GSON.toJson(customers);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return customersToJson(customers, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Not found").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -380,10 +354,9 @@ public class CustomerResource {
         try {
             String customerFirstName = CUSTOMER_SERVICE.getCustomerFirstNameById(customerId);
             if (customerFirstName != null) {
-                String json = GSON.toJson(customerFirstName);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+                return customerFirstNameToJson(customerFirstName, 200);
             } else {
-                return Response.status(Response.Status.NOT_FOUND).entity("Customer not found").build();
+                return notFound();
             }
         } catch (SQLException e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

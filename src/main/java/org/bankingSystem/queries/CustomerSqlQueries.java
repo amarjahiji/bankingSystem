@@ -12,9 +12,6 @@ public class CustomerSqlQueries {
                     "from customers " +
                     "order by customer_first_name";
 
-    public static final String GET_TOTAL_NUMBER_OF_CUSTOMERS =
-            "select count(*) as total from customers";
-
     public static final String GET_OLD_CUSTOMERS =
             "select id as customer_id, " +
                     "customer_first_name, " +
@@ -24,7 +21,7 @@ public class CustomerSqlQueries {
                     "customer_phone_number, " +
                     "customer_address " +
                     "from customers " +
-                    "where customer_date_of_birth < '1965-01-01' " +
+                    "where floor(datediff(current_date,customer_date_of_birth) / 365) > 64 " +
                     "order by customer_first_name";
 
     public static final String GET_CERTAIN_AGE_CUSTOMERS =
@@ -40,15 +37,6 @@ public class CustomerSqlQueries {
                     "order by customer_first_name";
 
 
-
-    public static final String GET_TOTAL_NUMBER_OF_OLD_CUSTOMERS =
-            "select count(*) as total from customers " +
-                    "where customer_date_of_birth < '1965-01-01'";
-
-    public static final String GET_TOTAL_NUMBER_OF_CERTAIN_AGE_CUSTOMERS =
-            "select count(*) as total from customers " +
-                    "where customer_date_of_birth between ? and ?";
-
     public static final String GET_YOUNG_CUSTOMERS =
             "select id as customer_id, " +
                     "customer_first_name, " +
@@ -58,12 +46,9 @@ public class CustomerSqlQueries {
                     "customer_phone_number, " +
                     "customer_address " +
                     "from customers " +
-                    "where customer_date_of_birth > '2002-01-01' " +
+                    "where floor(datediff(current_date,customer_date_of_birth) / 365) < 25 " +
                     "order by customer_first_name";
 
-    public static final String GET_TOTAL_NUMBER_OF_YOUNG_CUSTOMERS =
-            "select count(*) as total from customers " +
-                    "where customer_date_of_birth > '2002-01-01'";
 
     public static final String GET_CUSTOMER_BY_ID =
             "select id as customer_id, " +

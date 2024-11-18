@@ -23,6 +23,8 @@ public class TransactionService {
         } catch (SQLException e) {
             throw new SQLException("No transactions found" + e.getMessage());
         } finally {
+            //TODO even ResultSet and PrepareStatement will result on resource leaks if not closed
+            //TODO rs.close() and st.close() (this is closed automatically because of try-with-resources);
             if (connection != null && !connection.isClosed()) {
                 connection.close();
             }

@@ -13,18 +13,16 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Path("cardtype")
-public class CardTypeResource {
+public class CardTypeResource extends AbstractResource {
     private final CardTypeService CARD_TYPE_SERVICE = new CardTypeService();
-    private final Gson GSON = new Gson();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getCardTypes() {
         try {
-            List<CardType> cardTypeModels = CARD_TYPE_SERVICE.getCardTypes();
-            if (!cardTypeModels.isEmpty()) {
-                String json = GSON.toJson(cardTypeModels);
-                return Response.ok(json, MediaType.APPLICATION_JSON).build();
+            List<CardType> cardTypes = CARD_TYPE_SERVICE.getCardTypes();
+            if (!cardTypes.isEmpty()) {
+                return cardTypesToJson(cardTypes, 200);
             } else {
                 return Response.status(Response.Status.NOT_FOUND).entity("No card Types found").build();
             }
