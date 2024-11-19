@@ -11,12 +11,15 @@ import org.bankingSystem.queries.CustomerSqlQueries;
 import java.sql.*;
 import java.util.*;
 
-public class CustomerService {
+public class CustomerService extends AbstractService {
     public List<Customer> getCustomers(String query) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         List<Customer> customers = new ArrayList<>();
-        try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery(query)) {
+        Statement st = null;
+        ResultSet rs = null;
+        try {
+            st = connection.createStatement();
+            rs = st.executeQuery(query);
             while (rs.next()) {
                 Customer customer = new Customer(rs);
                 customers.add(customer);
@@ -25,9 +28,9 @@ public class CustomerService {
             throw new SQLException("Failed to get customers" +
                     e.getMessage());
         } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
+            closeConnection(connection);
+            closeResultSet(rs);
+            closeStatements(st);
         }
         return customers;
     }
@@ -47,11 +50,13 @@ public class CustomerService {
     public List<Customer> getCustomersOfCertainAge(String firstValue, String secondValue) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         List<Customer> customers = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement
-                (CustomerSqlQueries.GET_CERTAIN_AGE_CUSTOMERS)) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement(CustomerSqlQueries.GET_CERTAIN_AGE_CUSTOMERS);
             ps.setString(1, firstValue);
             ps.setString(2, secondValue);
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             while (rs.next()) {
                 Customer customer = new Customer(rs);
                 customers.add(customer);
@@ -60,19 +65,21 @@ public class CustomerService {
             throw new SQLException("Failed to get customers" +
                     e.getMessage());
         } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
+            closeConnection(connection);
+            closeResultSet(rs);
+            closeStatements(ps);
         }
         return customers;
     }
 
     public Customer getCustomerById(UUID customerId) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement
-                (CustomerSqlQueries.GET_CUSTOMER_BY_ID)) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMER_BY_ID);
             ps.setString(1, customerId.toString());
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             if (rs.next()) {
                 return new Customer(rs);
             }
@@ -80,9 +87,9 @@ public class CustomerService {
             throw new SQLException("Failed to get customer by id :" + customerId +
                     e.getMessage());
         } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
+            closeConnection(connection);
+            closeResultSet(rs);
+            closeStatements(ps);
         }
         return null;
     }
@@ -90,10 +97,12 @@ public class CustomerService {
     public List<Customer> getCustomerAccountsById(UUID customerId) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         Map<UUID, Customer> customerMap = new HashMap<>();
-        try (PreparedStatement st = connection.prepareStatement
-                (CustomerSqlQueries.GET_CUSTOMER_ACCOUNTS_BY_ID)) {
-            st.setString(1, customerId.toString());
-            ResultSet rs = st.executeQuery();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps =connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMER_ACCOUNTS_BY_ID);
+            ps.setString(1, customerId.toString());
+            rs = ps.executeQuery();
             while (rs.next()) {
                 UUID customerUuid = UUID.fromString(rs.getString("customer_id"));
                 customerMap.putIfAbsent(customerUuid, new Customer(rs));
@@ -105,9 +114,9 @@ public class CustomerService {
         } catch (SQLException e) {
             throw new SQLException("Failed to get customer accounts by id: " + customerId + e.getMessage());
         } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
+            closeConnection(connection);
+            closeResultSet(rs);
+            closeStatements(ps);
         }
         return new ArrayList<>(customerMap.values());
     }
@@ -115,9 +124,11 @@ public class CustomerService {
     public List<Customer> getCustomersAccounts() throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         Map<UUID, Customer> customerMap = new HashMap<>();
-        try (PreparedStatement ps = connection.prepareStatement
-                (CustomerSqlQueries.GET_CUSTOMERS_ACCOUNTS);
-             ResultSet rs = ps.executeQuery()) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMERS_ACCOUNTS);
+             rs = ps.executeQuery();
             while (rs.next()) {
                 UUID customerId = UUID.fromString(rs.getString("customer_id"));
                 customerMap.putIfAbsent(customerId, new Customer(rs));
@@ -129,9 +140,9 @@ public class CustomerService {
         } catch (SQLException e) {
             throw new SQLException("Failed to get customer accounts: " + e.getMessage());
         } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
+            closeConnection(connection);
+            closeResultSet(rs);
+            closeStatements(ps);
         }
 
         List<Customer> sortedCustomers = new ArrayList<>(customerMap.values());
@@ -142,8 +153,10 @@ public class CustomerService {
 
     public Customer createCustomer(Customer customer) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement
-                (CustomerSqlQueries.CREATE_CUSTOMER)) {
+        PreparedStatement ps = null;
+        int rowsAffected = 0;
+        try {
+            ps = connection.prepareStatement(CustomerSqlQueries.CREATE_CUSTOMER);
             UUID uuid = UUID.randomUUID();
             ps.setString(1, uuid.toString());
             ps.setString(2, customer.getCustomerFirstName());
@@ -152,24 +165,25 @@ public class CustomerService {
             ps.setString(5, customer.getCustomerEmail());
             ps.setString(6, customer.getCustomerPhoneNumber());
             ps.setString(7, customer.getCustomerAddress());
-            int rowsAffected = ps.executeUpdate();
+            rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to create a customer");
             }
         } catch (SQLException e) {
             throw new SQLException("Failed to create customer: " + e.getMessage());
         } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
+            closeConnection(connection);
+            closeStatements(ps);
         }
         return customer;
     }
 
     public Customer updateCustomerById(UUID customerId, Customer customer) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement
-                (CustomerSqlQueries.UPDATE_CUSTOMER_BY_ID)) {
+        PreparedStatement ps = null;
+        int rowsAffected = 0;
+        try {
+            ps = connection.prepareStatement(CustomerSqlQueries.UPDATE_CUSTOMER_BY_ID);
             ps.setString(1, customer.getCustomerFirstName());
             ps.setString(2, customer.getCustomerLastName());
             ps.setString(3, customer.getCustomerDateOfBirth());
@@ -177,76 +191,78 @@ public class CustomerService {
             ps.setString(5, customer.getCustomerPhoneNumber());
             ps.setString(6, customer.getCustomerAddress());
             ps.setString(7, customerId.toString());
-            int rowsAffected = ps.executeUpdate();
+            rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to update  customer by id: " + customerId);
             }
         } catch (SQLException e) {
             throw new SQLException("Failed to update customer with id: " + customerId + e.getMessage());
         } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
+            closeConnection(connection);
+            closePreparedStatement(ps);
         }
         return customer;
     }
 
     public Customer updateCustomerAddressById(UUID customerId, Customer customer) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement
-                (CustomerSqlQueries.UPDATE_CUSTOMER_ADDRESS_BY_ID)) {
+        PreparedStatement ps = null;
+        int rowsAffected = 0;
+        try {
+            ps = connection.prepareStatement(CustomerSqlQueries.UPDATE_CUSTOMER_ADDRESS_BY_ID);
             ps.setString(1, customer.getCustomerAddress());
             ps.setString(2, customerId.toString());
-            int rowsAffected = ps.executeUpdate();
+            rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to update address of customer with id: " + customerId);
             }
         } catch (SQLException e) {
             throw new SQLException("Failed to update customer address with id: " + customerId + e.getMessage());
         } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
+            closeConnection(connection);
+            closePreparedStatement(ps);
             }
-        }
         return customer;
     }
 
     public Customer updateCustomerEmailById(UUID customerId, Customer customer) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement
-                (CustomerSqlQueries.UPDATE_CUSTOMER_EMAIL_BY_ID)) {
+        PreparedStatement ps = null;
+        int rowsAffected = 0;
+        try {
+            ps = connection.prepareStatement(CustomerSqlQueries.UPDATE_CUSTOMER_EMAIL_BY_ID);
             ps.setString(1, customer.getCustomerEmail());
             ps.setString(2, customerId.toString());
-            int rowsAffected = ps.executeUpdate();
+            rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to update email of customer with id: " + customerId);
             }
         } catch (SQLException e) {
             throw new SQLException("Failed to update customer email with id: " + customerId + e.getMessage());
         } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
+            closeConnection(connection);
+            closePreparedStatement(ps);
         }
         return customer;
     }
 
     public Customer updateCustomerPhoneNumberById(UUID customerId, Customer customer) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement
-                (CustomerSqlQueries.UPDATE_CUSTOMER_PHONE_NUMBER_BY_ID)) {
+        PreparedStatement ps = null;
+        int rowsAffected = 0;
+        try {
+            ps = connection.prepareStatement(CustomerSqlQueries.UPDATE_CUSTOMER_PHONE_NUMBER_BY_ID);
             ps.setString(1, customer.getCustomerPhoneNumber());
             ps.setString(2, customerId.toString());
-            int rowsAffected = ps.executeUpdate();
+            rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to update phone number of customer with id: " + customerId);
             }
         } catch (SQLException e) {
             throw new SQLException("Failed to update customer phone number with id: " + customerId + e.getMessage());
         } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
+            closeConnection(connection);
+            closePreparedStatement(ps);
         }
         return customer;
     }
@@ -288,10 +304,12 @@ public class CustomerService {
         Connection connection = DatabaseConnector.getConnection();
         Map<UUID, Customer> customerMap = new HashMap<>();
         Map<UUID, Account> accountMap = new HashMap<>();
-        try (PreparedStatement ps = connection.prepareStatement
-                (CustomerSqlQueries.GET_CUSTOMER_ACCOUNTS_BY_ID)) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMER_ACCOUNTS_BY_ID);
             ps.setString(1, customerId.toString());
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             while (rs.next()) {
                 String customerIdStr = rs.getString("customer_id");
                 String accountIdStr = rs.getString("account_id");
@@ -317,9 +335,9 @@ public class CustomerService {
         } catch (SQLException e) {
             throw new SQLException("Failed to retrieve customers accounts and transactions");
         } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
+            closeConnection(connection);
+            closePreparedStatement(ps);
+            closeResultSet(rs);
         }
         return new ArrayList<>(customerMap.values());
     }
@@ -328,8 +346,11 @@ public class CustomerService {
         Connection connection = DatabaseConnector.getConnection();
         Map<UUID, Customer> customerMap = new HashMap<>();
         Map<UUID, Account> accountMap = new HashMap<>();
-        try (PreparedStatement ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMERS_ACCOUNTS)) {
-            ResultSet rs = ps.executeQuery();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMERS_ACCOUNTS);
+            rs = ps.executeQuery();
             while (rs.next()) {
                 String customerIdStr = rs.getString("customer_id");
                 String accountIdStr = rs.getString("account_id");
@@ -355,9 +376,9 @@ public class CustomerService {
         } catch (SQLException e) {
             throw new SQLException("Failed to retrieve customers accounts and transactions");
         } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
+            closeConnection(connection);
+            closePreparedStatement(ps);
+            closeResultSet(rs);
         }
         List<Customer> sortedCustomers = new ArrayList<>(customerMap.values());
         sortedCustomers.sort(Comparator.comparing(Customer::getCustomerFirstName));
@@ -367,8 +388,7 @@ public class CustomerService {
 
     public List<Transaction> getTransactionsForAccount(Connection connection, UUID accountId) throws SQLException {
         List<Transaction> transactions = new ArrayList<>();
-        try (PreparedStatement ps = connection.prepareStatement
-                (AccountSqlQueries.GET_ACCOUNT_TRANSACTIONS_BY_ID)) {
+        try (PreparedStatement ps = connection.prepareStatement(AccountSqlQueries.GET_ACCOUNT_TRANSACTIONS_BY_ID)) {
             ps.setString(1, accountId.toString());
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -384,9 +404,12 @@ public class CustomerService {
         Connection connection = DatabaseConnector.getConnection();
         Map<UUID, Customer> customerMap = new HashMap<>();
         Map<UUID, Account> accountMap = new HashMap<>();
-        try (PreparedStatement ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMER_ACCOUNTS_BY_ID)) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMER_ACCOUNTS_BY_ID);
             ps.setString(1, customerId.toString());
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             while (rs.next()) {
                 String customerIdStr = rs.getString("customer_id");
                 String accountIdStr = rs.getString("account_id");
@@ -412,9 +435,9 @@ public class CustomerService {
         } catch (SQLException e) {
             throw new SQLException("Failed to retrieve customers cards and transactions");
         } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
+            closeConnection(connection);
+            closePreparedStatement(ps);
+            closeResultSet(rs);
         }
         return new ArrayList<>(customerMap.values());
     }
@@ -423,9 +446,11 @@ public class CustomerService {
         Connection connection = DatabaseConnector.getConnection();
         Map<UUID, Customer> customerMap = new HashMap<>();
         Map<UUID, Account> accountMap = new HashMap<>();
-        try (PreparedStatement ps = connection.prepareStatement
-                (CustomerSqlQueries.GET_CUSTOMERS_ACCOUNTS)) {
-            ResultSet rs = ps.executeQuery();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMERS_ACCOUNTS);
+            rs = ps.executeQuery();
             while (rs.next()) {
                 String customerIdStr = rs.getString("customer_id");
                 String accountIdStr = rs.getString("account_id");
@@ -451,9 +476,9 @@ public class CustomerService {
         } catch (SQLException e) {
             throw new SQLException("Failed to retrieve customers cards and transactions");
         } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
+            closeConnection(connection);
+            closePreparedStatement(ps);
+            closeResultSet(rs);
         }
         List<Customer> sortedCustomers = new ArrayList<>(customerMap.values());
         sortedCustomers.sort(Comparator.comparing(Customer::getCustomerFirstName));
@@ -478,19 +503,21 @@ public class CustomerService {
 
     public String getCustomerFirstNameById(UUID customerId) throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
-        try (PreparedStatement ps = connection.prepareStatement
-                (CustomerSqlQueries.GET_CUSTOMER_FIRST_NAME_BY_ID)) {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMER_FIRST_NAME_BY_ID);
             ps.setString(1, customerId.toString());
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             if (rs.next()) {
                 return rs.getString(1);
             }
         } catch (SQLException e) {
             throw new SQLException("Failed to retrieve customer first name by id: " + customerId + e.getMessage());
         } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
+            closeConnection(connection);
+            closePreparedStatement(ps);
+            closeResultSet(rs);
         }
         return null;
     }

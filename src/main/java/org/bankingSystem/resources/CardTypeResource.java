@@ -18,18 +18,12 @@ public class CardTypeResource extends AbstractResource {
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getCardTypes() {
-        try {
+    public Response getCardTypes() throws SQLException {
             List<CardType> cardTypes = CARD_TYPE_SERVICE.getCardTypes();
             if (!cardTypes.isEmpty()) {
                 return cardTypesToJson(cardTypes, 200);
             } else {
                 return Response.status(Response.Status.NOT_FOUND).entity("No card Types found").build();
             }
-        } catch (SQLException e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(e.getMessage())
-                    .build();
-        }
     }
 }

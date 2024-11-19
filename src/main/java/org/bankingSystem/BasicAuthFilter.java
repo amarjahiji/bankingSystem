@@ -32,8 +32,12 @@ public class BasicAuthFilter implements ContainerRequestFilter {
                 String username = tokenizer.nextToken();
                 String password = tokenizer.nextToken();
                 //TODO make this token based (JWT), passwords shouldn't be transported
-                if (validateUserCredentials(username, password)) {
-                    return;
+                try {
+                    if (validateUserCredentials(username, password)) {
+                        return;
+                    }
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
                 }
             }
             Response unauthorizedStatus = Response.status
@@ -44,13 +48,15 @@ public class BasicAuthFilter implements ContainerRequestFilter {
         }
     }
 
-    private boolean validateUserCredentials(String username, String password) {
-        try (Connection connection = DatabaseConnector.getConnection()) {
-            PreparedStatement ps = connection.prepareStatement
-                    (AdminSqlQueries.GET_ADMINS);
+    private boolean validateUserCredentials(String username, String password) throws SQLException {
+            Connection connection = DatabaseConnector.getConnection();
+            PreparedStatement ps = null;
+            ResultSet rs = null;
+            try{
+            ps = connection.prepareStatement(AdminSqlQueries.GET_ADMINS);
             ps.setString(1, username);
             ps.setString(2, password);
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             return rs.next();
         } catch (SQLException e) {
             throw new RuntimeException("Admin does not exist.", e);

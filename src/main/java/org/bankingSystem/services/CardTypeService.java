@@ -8,12 +8,15 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CardTypeService {
+public class CardTypeService extends AbstractService {
     public List<CardType> getCardTypes() throws SQLException {
         Connection connection = DatabaseConnector.getConnection();
         List<CardType> cardTypes = new ArrayList<>();
-        try (Statement st = connection.createStatement();
-             ResultSet rs = st.executeQuery(CardTypeSqlQueries.GET_CARD_TYPES)){
+        Statement st = null;
+        ResultSet rs = null;
+        try {
+            st = connection.createStatement();
+             rs = st.executeQuery(CardTypeSqlQueries.GET_CARD_TYPES);
             while (rs.next()) {
                 CardType newCardTypes = new CardType(rs);
                 cardTypes.add(newCardTypes);
@@ -21,9 +24,9 @@ public class CardTypeService {
         } catch (SQLException e) {
             throw new SQLException("Error retrieving card types" + e.getMessage());
         } finally {
-            if (connection != null && !connection.isClosed()) {
-                connection.close();
-            }
+            closeConnection(connection);
+            closeResultSet(rs);
+            closeStatements(st);
         }
         return cardTypes;
     }
