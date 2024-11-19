@@ -1,5 +1,6 @@
 package org.bankingSystem.resources;
 
+import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -120,6 +121,7 @@ public class AccountResource extends AbstractResource {
     }
 
     //Additional, not required
+
     @Path("accountnumber/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)

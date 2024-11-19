@@ -48,14 +48,15 @@ public class BasicAuthFilter implements ContainerRequestFilter {
         }
     }
 
-    private boolean validateUserCredentials(String username, String password) throws SQLException {
+    private boolean validateUserCredentials(String email, String password) throws SQLException {
             Connection connection = DatabaseConnector.getConnection();
             PreparedStatement ps = null;
             ResultSet rs = null;
             try{
             ps = connection.prepareStatement(AdminSqlQueries.GET_ADMINS);
-            ps.setString(1, username);
+            ps.setString(1, email);
             ps.setString(2, password);
+            ps.setString(3, "Full");
             rs = ps.executeQuery();
             return rs.next();
         } catch (SQLException e) {

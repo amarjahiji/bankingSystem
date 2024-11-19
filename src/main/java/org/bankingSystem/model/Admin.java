@@ -6,15 +6,19 @@ import java.sql.SQLException;
 public class Admin {
     private String adminFirstName;
     private String adminLastName;
-    private String adminUsername;
+    private String adminEmail;
     private String adminPassword;
+    private String adminSecurityClearance;
 
     public Admin(ResultSet rs) throws SQLException {
         this.adminFirstName = rs.getString("admin_first_name");
         this.adminLastName = rs.getString("admin_last_name");
-        this.adminUsername = rs.getString("admin_username");
+        this.adminEmail = rs.getString("admin_email");
         this.adminPassword = rs.getString("admin_password");
+        this.adminSecurityClearance = rs.getString("admin_security_clearance");
     }
+
+
 
     public String getAdminFirstName() {
         return adminFirstName;
@@ -32,12 +36,11 @@ public class Admin {
         this.adminLastName = adminLastName;
     }
 
-    public String getAdminUsername() {
-        return adminUsername;
+    public String getAdminEmail() {
+        return adminEmail;
     }
-
-    public void setAdminUsername(String adminUsername) {
-        this.adminUsername = adminUsername;
+    public void setAdminEmail(String adminEmail) {
+        this.adminEmail = adminEmail;
     }
 
     public String getAdminPassword() {
@@ -47,5 +50,12 @@ public class Admin {
     public void setAdminPassword(String adminPassword) {
         this.adminPassword = adminPassword;
     }
+    public String getAdminSecurityClearance() {
+        return adminSecurityClearance;
+    }
+    public void setAdminSecurityClearance(String adminSecurityClearance) {
+        this.adminSecurityClearance = adminSecurityClearance;
+    }
+
 
 }

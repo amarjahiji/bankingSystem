@@ -114,7 +114,7 @@ public class CustomerResource extends AbstractResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createCustomer(String payload) throws SQLException {
-            Customer customer = customerFromJson(payload);
+        Customer customer = customerFromJson(payload);
             Customer createdCustomer = CUSTOMER_SERVICE.createCustomer(customer);
             if (createdCustomer != null) {
                 return customerToJson(createdCustomer, 200);

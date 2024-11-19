@@ -1,8 +1,12 @@
 package org.bankingSystem.services;
 
+import com.google.gson.Gson;
+
 import java.sql.*;
 
 public class AbstractService {
+
+    public static final Gson GSON = new Gson();
 
     protected void closeStatements(Statement... statements) throws SQLException {
         for (Statement statement : statements) {

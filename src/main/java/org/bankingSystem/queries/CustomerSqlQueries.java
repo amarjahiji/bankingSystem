@@ -114,7 +114,7 @@ public class CustomerSqlQueries {
                     "customer_email, " +
                     "customer_phone_number, " +
                     "customer_address) " +
-                    "values(?,?,?,?,?,?, ?)";
+                    "values(?,?,?,?,?,?,?)";
 
     public static final String UPDATE_CUSTOMER_ADDRESS_BY_ID =
             "update customers " +
