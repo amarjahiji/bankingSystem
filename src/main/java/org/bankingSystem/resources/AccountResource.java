@@ -1,6 +1,5 @@
 package org.bankingSystem.resources;
 
-import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -30,12 +29,12 @@ public class AccountResource extends AbstractResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAccountById(@PathParam("id") UUID accountId) throws SQLException {
-            Account account = ACCOUNT_SERVICE.getAccountById(accountId);
-            if (account != null) {
-                return accountToJson(account, 200);
-            } else {
-                return notFound();
-            }
+        Account account = ACCOUNT_SERVICE.getAccountById(accountId);
+        if (account != null) {
+            return accountToJson(account, 200);
+        } else {
+            return notFound();
+        }
     }
 
     @Path("/add/secured")
@@ -43,13 +42,13 @@ public class AccountResource extends AbstractResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createAccount(String payload) throws SQLException {
-            Account account = accountFromJson(payload);
-            Account createdAccount = ACCOUNT_SERVICE.createAccount(account);
-            if (createdAccount != null) {
-                return accountToJson(createdAccount, 200);
-            } else {
-                return notFound();
-            }
+        Account account = accountFromJson(payload);
+        Account createdAccount = ACCOUNT_SERVICE.createAccount(account);
+        if (createdAccount != null) {
+            return accountToJson(createdAccount, 200);
+        } else {
+            return notFound();
+        }
     }
 
     @Path("/update/secured/{id}")
@@ -57,13 +56,13 @@ public class AccountResource extends AbstractResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateAccountById(@PathParam("id") UUID accountId, String payload) throws SQLException {
-            Account account = accountFromJson(payload);
-            Account updatedAccount = ACCOUNT_SERVICE.updateAccountById(accountId, account);
-            if (updatedAccount != null) {
-                return accountToJson(updatedAccount, 200);
-            } else {
-                return notFound();
-            }
+        Account account = accountFromJson(payload);
+        Account updatedAccount = ACCOUNT_SERVICE.updateAccountById(accountId, account);
+        if (updatedAccount != null) {
+            return accountToJson(updatedAccount, 200);
+        } else {
+            return notFound();
+        }
     }
 
     @Path("/dateclosed/update/secured/{id}")
@@ -71,13 +70,13 @@ public class AccountResource extends AbstractResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateAccountDateClosedById(@PathParam("id") UUID accountId, String payload) throws SQLException {
-            Account account = accountFromJson(payload);
-            Account updatedAccount = ACCOUNT_SERVICE.updateAccountDateClosedById(accountId, account);
-            if (updatedAccount != null) {
-                return accountToJson(updatedAccount, 200);
-            } else {
-                return notFound();
-            }
+        Account account = accountFromJson(payload);
+        Account updatedAccount = ACCOUNT_SERVICE.updateAccountDateClosedById(accountId, account);
+        if (updatedAccount != null) {
+            return accountToJson(updatedAccount, 200);
+        } else {
+            return notFound();
+        }
     }
 
     @Path("/balance/update/secured/{id}")
@@ -85,39 +84,39 @@ public class AccountResource extends AbstractResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateAccountCurrentBalanceById(@PathParam("id") UUID accountId, String payload) throws SQLException {
-            Account account = accountFromJson(payload);
-            Account updatedAccount = ACCOUNT_SERVICE.updateAccountCurrentBalanceById(accountId, account);
-            if (updatedAccount != null) {
-                return accountToJson(updatedAccount, 200);
-            } else {
-                return notFound();
-            }
+        Account account = accountFromJson(payload);
+        Account updatedAccount = ACCOUNT_SERVICE.updateAccountCurrentBalanceById(accountId, account);
+        if (updatedAccount != null) {
+            return accountToJson(updatedAccount, 200);
+        } else {
+            return notFound();
         }
+    }
 
     @Path("/status/update/secured/{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateAccountStatusById(@PathParam("id") UUID accountId, String payload) throws SQLException {
-            Account account = accountFromJson(payload);
-            Account updatedAccount = ACCOUNT_SERVICE.updateAccountStatusById(accountId, account);
-            if (updatedAccount != null) {
-                return accountToJson(updatedAccount, 200);
-            } else {
-                return notFound();
-            }
+        Account account = accountFromJson(payload);
+        Account updatedAccount = ACCOUNT_SERVICE.updateAccountStatusById(accountId, account);
+        if (updatedAccount != null) {
+            return accountToJson(updatedAccount, 200);
+        } else {
+            return notFound();
+        }
     }
 
     @DELETE
     @Path("/delete/secured/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response deleteAccountById(@PathParam("id") UUID accountId) throws SQLException {
-            boolean isDeleted = ACCOUNT_SERVICE.deleteAccountById(accountId);
-            if (isDeleted) {
-                return Response.ok("Account deleted successfully.").build();
-            } else {
-                return notFound();
-            }
+        boolean isDeleted = ACCOUNT_SERVICE.deleteAccountById(accountId);
+        if (isDeleted) {
+            return Response.ok("Account deleted successfully.").build();
+        } else {
+            return notFound();
+        }
     }
 
     //Additional, not required
