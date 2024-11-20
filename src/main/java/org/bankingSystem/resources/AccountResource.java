@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-@Path("account")
+@Path("account/secured")
 public class AccountResource extends AbstractResource {
     private final AccountService ACCOUNT_SERVICE = new AccountService();
 
@@ -120,7 +120,6 @@ public class AccountResource extends AbstractResource {
     }
 
     //Additional, not required
-
     @Path("accountnumber/{id}")
     @GET
     @Produces(MediaType.APPLICATION_JSON)
