@@ -28,7 +28,8 @@ public class LoginService extends AbstractService {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new SQLException("Failed to log in" + e.getMessage());
+
         } finally {
             closeConnection(connection);
             closePreparedStatement(preparedStatement);
@@ -38,10 +39,10 @@ public class LoginService extends AbstractService {
     }
 
     public Admin signup(Admin admin) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
-        int rowsAffected = 0;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(AdminSqlQueries.CREATE_ADMIN);
             UUID uuid = UUID.randomUUID();
             String hashedPassword = BCrypt.hashpw(admin.getAdminPassword(), BCrypt.gensalt());
@@ -52,7 +53,7 @@ public class LoginService extends AbstractService {
             ps.setString(4, admin.getAdminEmail());
             ps.setString(5, hashedPassword);
             ps.setString(6, admin.getAdminSecurityClearance());
-            rowsAffected = ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to create a admin");
             }

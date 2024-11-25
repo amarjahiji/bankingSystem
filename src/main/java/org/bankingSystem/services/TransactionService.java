@@ -11,11 +11,12 @@ import java.util.UUID;
 
 public class TransactionService extends AbstractService {
     public List<Transaction> getTransactions() throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
         List<Transaction> transactions = new ArrayList<>();
+        Connection connection = null;
         Statement st = null;
         ResultSet rs = null;
         try {
+            connection = DatabaseConnector.getConnection();
             st = connection.createStatement();
             rs = st.executeQuery(TransactionSqlQueries.GET_TRANSACTIONS);
             while (rs.next()) {
@@ -34,12 +35,12 @@ public class TransactionService extends AbstractService {
     }
 
     public Transaction getTransactionById(UUID transactionId) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps = connection.prepareStatement
-                    (TransactionSqlQueries.GET_TRANSACTION_BY_ID);
+            connection = DatabaseConnector.getConnection();
+            ps = connection.prepareStatement(TransactionSqlQueries.GET_TRANSACTION_BY_ID);
             ps.setString(1, transactionId.toString());
             rs = ps.executeQuery();
             if (rs.next()) {
@@ -56,10 +57,11 @@ public class TransactionService extends AbstractService {
     }
 
     public Transaction createTransaction(Transaction transactions) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
         int rowsAffected = 0;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(TransactionSqlQueries.CREATE_TRANSACTION);
             UUID uuid = UUID.randomUUID();
             ps.setString(1, uuid.toString());

@@ -36,7 +36,6 @@ class CustomerResourceTest {
     @Test
     void createCustomer() throws SQLException {
         String payload = "{\n" +
-                "  \"customerId\": \"7e9d3c3f-bc62-4be3-92dd-3a8ae89e3aa9\",\n" +
                 "  \"customerFirstName\": \"Jack\",\n" +
                 "  \"customerLastName\": \"House\",\n" +
                 "  \"customerDateOfBirth\": \"2004-05-01\",\n" +
@@ -105,6 +104,24 @@ class CustomerResourceTest {
     @Test
     void getCustomerFirstNameById() throws SQLException {
         Response response = new CustomerResource().getCustomerFirstNameById(UUID.fromString("7e9d3c3f-bc62-4be3-92dd-3a8ae89e3aa9"));
+        System.out.println(response.getEntity());
+    }
+
+    @Test
+    void getOldCustomers() throws SQLException {
+        Response response = new CustomerResource().getOldCustomers();
+        System.out.println(response.getEntity());
+    }
+
+    @Test
+    void getYoungCustomers() throws SQLException {
+        Response response = new CustomerResource().getYoungCustomers();
+        System.out.println(response.getEntity());
+    }
+
+    @Test
+    void getCustomersOfCertainAge() throws SQLException {
+        Response response = new CustomerResource().getCustomersOfCertainAge("1960-01-01", "2024-01-01");
         System.out.println(response.getEntity());
     }
 }

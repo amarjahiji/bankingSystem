@@ -11,11 +11,12 @@ import java.util.UUID;
 
 public class AccountService extends AbstractService {
     public List<Account> getAccounts() throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
         List<Account> accounts = new ArrayList<>();
+        Connection connection = null;
         Statement st = null;
         ResultSet rs = null;
         try {
+            connection = DatabaseConnector.getConnection();
             st = connection.createStatement();
             rs = st.executeQuery(AccountSqlQueries.GET_ACCOUNTS);
             while (rs.next()) {
@@ -33,10 +34,11 @@ public class AccountService extends AbstractService {
     }
 
     public Account getAccountById(UUID accountId) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(AccountSqlQueries.GET_ACCOUNT_BY_ID);
             ps.setString(1, accountId.toString());
             rs = ps.executeQuery();
@@ -54,10 +56,10 @@ public class AccountService extends AbstractService {
     }
 
     public Account createAccount(Account account) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
-        int rowsAffected = 0;
-        try{
+        try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(AccountSqlQueries.CREATE_ACCOUNT);
             UUID uuid = UUID.randomUUID();
             ps.setString(1, uuid.toString());
@@ -68,7 +70,7 @@ public class AccountService extends AbstractService {
             ps.setString(6, account.getAccountDateClosed());
             ps.setString(7, account.getAccountStatus());
             ps.setString(8, account.getCustomerId().toString());
-            rowsAffected = ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to create account");
             }
@@ -82,10 +84,10 @@ public class AccountService extends AbstractService {
     }
 
     public Account updateAccountById(UUID accountId, Account account) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
-        int rowsAffected = 0;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(AccountSqlQueries.UPDATE_ACCOUNT_BY_ID);
             ps.setString(1, account.getAccountNumber());
             ps.setString(2, account.getAccountType());
@@ -95,7 +97,7 @@ public class AccountService extends AbstractService {
             ps.setString(6, account.getAccountStatus());
             ps.setString(7, account.getCustomerId().toString());
             ps.setString(8, accountId.toString());
-            rowsAffected = ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to update account with id : " + accountId);
             }
@@ -109,14 +111,14 @@ public class AccountService extends AbstractService {
     }
 
     public Account updateAccountDateClosedById(UUID accountId, Account account) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
-        int rowsAffected = 0;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(AccountSqlQueries.UPDATE_ACCOUNT_DATE_CLOSED_BY_ID);
             ps.setString(1, account.getAccountDateClosed());
             ps.setString(2, accountId.toString());
-            rowsAffected = ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to update date closed of account with id : " + accountId);
             }
@@ -130,14 +132,14 @@ public class AccountService extends AbstractService {
     }
 
     public Account updateAccountCurrentBalanceById(UUID accountId, Account account) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
-        int rowsAffected = 0;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(AccountSqlQueries.UPDATE_ACCOUNT_CURRENT_BALANCE_BY_ID);
             ps.setDouble(1, account.getAccountCurrentBalance());
             ps.setString(2, accountId.toString());
-            rowsAffected = ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to update current balance of account with id : " + accountId);
             }
@@ -151,15 +153,14 @@ public class AccountService extends AbstractService {
     }
 
     public Account updateAccountStatusById(UUID accountId, Account account) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
-        int rowsAffected = 0;
         try {
-            ps = connection.prepareStatement
-                    (AccountSqlQueries.UPDATE_ACCOUNT_STATUS_BY_ID);
+            connection = DatabaseConnector.getConnection();
+            ps = connection.prepareStatement(AccountSqlQueries.UPDATE_ACCOUNT_STATUS_BY_ID);
             ps.setString(1, account.getAccountStatus());
             ps.setString(2, accountId.toString());
-            rowsAffected = ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to update status of account with id : " + accountId);
             }
@@ -213,10 +214,11 @@ public class AccountService extends AbstractService {
     }
 
     public String getAccountNumberById(UUID accountId) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(AccountSqlQueries.GET_ACCOUNT_NUMBER_BY_ID);
             ps.setString(1, accountId.toString());
             rs = ps.executeQuery();

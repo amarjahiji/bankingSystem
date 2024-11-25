@@ -4,19 +4,23 @@ import org.bankingSystem.DatabaseConnector;
 import org.bankingSystem.model.CardType;
 import org.bankingSystem.queries.CardTypeSqlQueries;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CardTypeService extends AbstractService {
     public List<CardType> getCardTypes() throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
         List<CardType> cardTypes = new ArrayList<>();
+        Connection connection = null;
         Statement st = null;
         ResultSet rs = null;
         try {
+            connection = DatabaseConnector.getConnection();
             st = connection.createStatement();
-             rs = st.executeQuery(CardTypeSqlQueries.GET_CARD_TYPES);
+            rs = st.executeQuery(CardTypeSqlQueries.GET_CARD_TYPES);
             while (rs.next()) {
                 CardType newCardTypes = new CardType(rs);
                 cardTypes.add(newCardTypes);

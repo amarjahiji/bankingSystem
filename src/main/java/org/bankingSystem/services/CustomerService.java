@@ -13,11 +13,12 @@ import java.util.*;
 
 public class CustomerService extends AbstractService {
     public List<Customer> getCustomers(String query) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         List<Customer> customers = new ArrayList<>();
         Statement st = null;
         ResultSet rs = null;
         try {
+            connection = DatabaseConnector.getConnection();
             st = connection.createStatement();
             rs = st.executeQuery(query);
             while (rs.next()) {
@@ -48,11 +49,12 @@ public class CustomerService extends AbstractService {
     }
 
     public List<Customer> getCustomersOfCertainAge(String firstValue, String secondValue) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         List<Customer> customers = new ArrayList<>();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(CustomerSqlQueries.GET_CERTAIN_AGE_CUSTOMERS);
             ps.setString(1, firstValue);
             ps.setString(2, secondValue);
@@ -73,10 +75,11 @@ public class CustomerService extends AbstractService {
     }
 
     public Customer getCustomerById(UUID customerId) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMER_BY_ID);
             ps.setString(1, customerId.toString());
             rs = ps.executeQuery();
@@ -95,12 +98,13 @@ public class CustomerService extends AbstractService {
     }
 
     public List<Customer> getCustomerAccountsById(UUID customerId) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         Map<UUID, Customer> customerMap = new HashMap<>();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            ps =connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMER_ACCOUNTS_BY_ID);
+            connection = DatabaseConnector.getConnection();
+            ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMER_ACCOUNTS_BY_ID);
             ps.setString(1, customerId.toString());
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -122,13 +126,14 @@ public class CustomerService extends AbstractService {
     }
 
     public List<Customer> getCustomersAccounts() throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         Map<UUID, Customer> customerMap = new HashMap<>();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMERS_ACCOUNTS);
-             rs = ps.executeQuery();
+            rs = ps.executeQuery();
             while (rs.next()) {
                 UUID customerId = UUID.fromString(rs.getString("customer_id"));
                 customerMap.putIfAbsent(customerId, new Customer(rs));
@@ -152,10 +157,10 @@ public class CustomerService extends AbstractService {
     }
 
     public Customer createCustomer(Customer customer) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
-        int rowsAffected = 0;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(CustomerSqlQueries.CREATE_CUSTOMER);
             UUID uuid = UUID.randomUUID();
             ps.setString(1, uuid.toString());
@@ -165,7 +170,7 @@ public class CustomerService extends AbstractService {
             ps.setString(5, customer.getCustomerEmail());
             ps.setString(6, customer.getCustomerPhoneNumber());
             ps.setString(7, customer.getCustomerAddress());
-            rowsAffected = ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to create a customer");
             }
@@ -179,10 +184,10 @@ public class CustomerService extends AbstractService {
     }
 
     public Customer updateCustomerById(UUID customerId, Customer customer) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
-        int rowsAffected = 0;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(CustomerSqlQueries.UPDATE_CUSTOMER_BY_ID);
             ps.setString(1, customer.getCustomerFirstName());
             ps.setString(2, customer.getCustomerLastName());
@@ -191,7 +196,7 @@ public class CustomerService extends AbstractService {
             ps.setString(5, customer.getCustomerPhoneNumber());
             ps.setString(6, customer.getCustomerAddress());
             ps.setString(7, customerId.toString());
-            rowsAffected = ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to update  customer by id: " + customerId);
             }
@@ -205,14 +210,14 @@ public class CustomerService extends AbstractService {
     }
 
     public Customer updateCustomerAddressById(UUID customerId, Customer customer) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
-        int rowsAffected = 0;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(CustomerSqlQueries.UPDATE_CUSTOMER_ADDRESS_BY_ID);
             ps.setString(1, customer.getCustomerAddress());
             ps.setString(2, customerId.toString());
-            rowsAffected = ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to update address of customer with id: " + customerId);
             }
@@ -221,19 +226,19 @@ public class CustomerService extends AbstractService {
         } finally {
             closeConnection(connection);
             closePreparedStatement(ps);
-            }
+        }
         return customer;
     }
 
     public Customer updateCustomerEmailById(UUID customerId, Customer customer) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
-        int rowsAffected = 0;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(CustomerSqlQueries.UPDATE_CUSTOMER_EMAIL_BY_ID);
             ps.setString(1, customer.getCustomerEmail());
             ps.setString(2, customerId.toString());
-            rowsAffected = ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to update email of customer with id: " + customerId);
             }
@@ -247,14 +252,14 @@ public class CustomerService extends AbstractService {
     }
 
     public Customer updateCustomerPhoneNumberById(UUID customerId, Customer customer) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
-        int rowsAffected = 0;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(CustomerSqlQueries.UPDATE_CUSTOMER_PHONE_NUMBER_BY_ID);
             ps.setString(1, customer.getCustomerPhoneNumber());
             ps.setString(2, customerId.toString());
-            rowsAffected = ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
             if (rowsAffected < 1) {
                 throw new SQLException("No rows affected trying to update phone number of customer with id: " + customerId);
             }
@@ -301,12 +306,13 @@ public class CustomerService extends AbstractService {
 
     //Additional services that were not required
     public List<Customer> getCustomerAccountsTransactionsById(UUID customerId) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         Map<UUID, Customer> customerMap = new HashMap<>();
         Map<UUID, Account> accountMap = new HashMap<>();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMER_ACCOUNTS_BY_ID);
             ps.setString(1, customerId.toString());
             rs = ps.executeQuery();
@@ -343,12 +349,13 @@ public class CustomerService extends AbstractService {
     }
 
     public List<Customer> getCustomersAccountsTransactions() throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         Map<UUID, Customer> customerMap = new HashMap<>();
         Map<UUID, Account> accountMap = new HashMap<>();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMERS_ACCOUNTS);
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -401,12 +408,13 @@ public class CustomerService extends AbstractService {
     }
 
     public List<Customer> getCustomerAccountsCardsById(UUID customerId) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         Map<UUID, Customer> customerMap = new HashMap<>();
         Map<UUID, Account> accountMap = new HashMap<>();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMER_ACCOUNTS_BY_ID);
             ps.setString(1, customerId.toString());
             rs = ps.executeQuery();
@@ -443,12 +451,13 @@ public class CustomerService extends AbstractService {
     }
 
     public List<Customer> getCustomersAccountsCards() throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         Map<UUID, Customer> customerMap = new HashMap<>();
         Map<UUID, Account> accountMap = new HashMap<>();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMERS_ACCOUNTS);
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -502,10 +511,11 @@ public class CustomerService extends AbstractService {
     }
 
     public String getCustomerFirstNameById(UUID customerId) throws SQLException {
-        Connection connection = DatabaseConnector.getConnection();
+        Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
+            connection = DatabaseConnector.getConnection();
             ps = connection.prepareStatement(CustomerSqlQueries.GET_CUSTOMER_FIRST_NAME_BY_ID);
             ps.setString(1, customerId.toString());
             rs = ps.executeQuery();

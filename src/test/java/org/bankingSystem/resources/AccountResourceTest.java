@@ -23,14 +23,13 @@ class AccountResourceTest {
     @Test
     void createAccount() throws SQLException {
         String payload = "{\n" +
-                "    \"accountId\": \"12d29625-da9f-42b9-8523-4adc8ec7a187\",\n" +
-                "    \"accountNumber\": \"1234760912763907\",\n" +
+                "    \"accountNumber\": \"100018\",\n" +
                 "    \"accountType\": \"Savings\",\n" +
                 "    \"accountCurrentBalance\": 200.00,\n" +
-                "    \"accountDateOpened\": \"2009-01-02\",\n" +
-                "    \"accountDateClosed\": \"2022-02-02\",\n" +
+                "    \"accountDateOpened\": \"2009-01-02 00:27:40\",\n" +
+                "    \"accountDateClosed\": \"2022-02-02 00:29:50\",\n" +
                 "    \"accountStatus\": \"Inactive\",\n" +
-                "    \"customerId\": 1\n" +
+                "    \"customerId\": 00ee5f22-6877-407a-b519-4063f517ed69\n" +
                 "}";
         Response response = new AccountResource().createAccount(payload);
         System.out.println(response.getEntity());
@@ -39,13 +38,13 @@ class AccountResourceTest {
     @Test
     void updateAccountById() throws SQLException {
         String payload = "{\n" +
-                "    \"accountNumber\": \"1234760911113907\",\n" +
+                "    \"accountNumber\": \"100018\",\n" +
                 "    \"accountType\": \"Savings\",\n" +
                 "    \"accountCurrentBalance\": 200.00,\n" +
-                "    \"accountDateOpened\": \"2009-01-02\",\n" +
-                "    \"accountDateClosed\": \"2022-02-02\",\n" +
+                "    \"accountDateOpened\": \"2009-01-02 00:27:40\",\n" +
+                "    \"accountDateClosed\": \"2022-02-02 02:37:00\",\n" +
                 "    \"accountStatus\": \"Inactive\",\n" +
-                "    \"customerId\": 2\n" +
+                "    \"customerId\": 00ee5f22-6877-407a-b519-4063f517ed69\n" +
                 "}";
         Response response = new AccountResource().updateAccountById(UUID.fromString("12d29625-da9f-42b9-8523-4adc8ec7a187"), payload);
         System.out.println(response.getEntity());
@@ -54,7 +53,7 @@ class AccountResourceTest {
     @Test
     void updateAccountDateClosedById() throws SQLException {
         String payload = "{\n" +
-                "  \"accountDateClosedById\": \"2022-02-02\"\n" +
+                "  \"accountDateClosedById\": \"2022-02-02 02:00:00\"\n" +
                 "}";
         Response response = new AccountResource().updateAccountDateClosedById(UUID.fromString("a1d7a3b5-e29b-41d4-a716-446655440000"), payload);
         System.out.println(response.getEntity());

@@ -26,12 +26,13 @@ class CardResourceTest {
         String payload = "{\n"
                 + "  \"cardId\": \"d1e7a3b5-e29b-41d4-a716-446655440000\",\n"
                 + "  \"cardNumber\": \"1233217863748916\",\n"
-                + "  \"cardExpiryDate\": \"2028-08-08\",\n"
+                + "  \"cardExpiryDate\": \"2028-08-08 00:00:00\",\n"
                 + "  \"cardHolderName\": \"Dan Doe\",\n"
                 + "  \"cardCvv\": \"111\",\n"
                 + "  \"cardTypeId\": 2,\n"
-                + "  \"accountId\": 1\n"
+                + "  \"accountId\": a9d7a3b5-e29b-41d4-a716-446655440008\n"
                 + "}";
+
         Response response = new CardResource().createCard(payload);
         System.out.println(response.getEntity());
     }
@@ -40,11 +41,11 @@ class CardResourceTest {
     void updateCardById() throws SQLException {
         String payload = "{\n" +
                 "  \"cardNumber\": \"1223417863748916\",\n" +
-                "  \"cardExpiryDate\": \"2028-08-08\",\n" +
+                "  \"cardExpiryDate\": \"2028-08-08 02:04:04\",\n" +
                 "  \"cardHolderName\": \"Dan Doe\",\n" +
                 "  \"cardCvv\": \"111\",\n" +
                 "  \"cardTypeId\": 2,\n" +
-                "  \"accountId\": 1\n" +
+                "  \"accountId\": a9d7a3b5-e29b-41d4-a716-446655440008\n" +
                 "}";
         Response response = new CardResource().updateCardById(UUID.fromString("d1e7a3b5-e29b-41d4-a716-446655440000"), payload);
         System.out.println(response.getEntity());
