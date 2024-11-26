@@ -11,7 +11,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CardTypeService extends AbstractService {
+public class CardTypeService extends CommonService {
     public List<CardType> getCardTypes() throws SQLException {
         List<CardType> cardTypes = new ArrayList<>();
         Connection connection = null;

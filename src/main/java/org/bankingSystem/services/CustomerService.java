@@ -11,7 +11,7 @@ import org.bankingSystem.queries.CustomerSqlQueries;
 import java.sql.*;
 import java.util.*;
 
-public class CustomerService extends AbstractService {
+public class CustomerService extends CommonService {
     public List<Customer> getCustomers(String query) throws SQLException {
         Connection connection = null;
         List<Customer> customers = new ArrayList<>();
@@ -126,8 +126,8 @@ public class CustomerService extends AbstractService {
     }
 
     public List<Customer> getCustomersAccounts() throws SQLException {
-        Connection connection = null;
         Map<UUID, Customer> customerMap = new HashMap<>();
+        Connection connection = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {

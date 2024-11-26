@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class CardService extends AbstractService {
+public class CardService extends CommonService {
     public List<Card> getCards() throws SQLException {
         Connection connection = null;
         List<Card> cards = new ArrayList<>();

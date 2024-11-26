@@ -1,6 +1,8 @@
 package org.bankingSystem.services;
 
+import com.auth0.jwt.exceptions.JWTCreationException;
 import org.bankingSystem.DatabaseConnector;
+import org.bankingSystem.JwtUtil;
 import org.bankingSystem.model.Admin;
 import org.bankingSystem.queries.AdminSqlQueries;
 import org.mindrot.jbcrypt.BCrypt;
@@ -11,8 +13,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class LoginService extends AbstractService {
-    public Admin login(String email, String password) throws SQLException {
+public class AdminService extends CommonService {
+    public Admin login(String email, String password)throws SQLException {
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet rs = null;
@@ -29,7 +31,6 @@ public class LoginService extends AbstractService {
             }
         } catch (SQLException e) {
             throw new SQLException("Failed to log in" + e.getMessage());
-
         } finally {
             closeConnection(connection);
             closePreparedStatement(preparedStatement);
@@ -64,5 +65,9 @@ public class LoginService extends AbstractService {
             closeStatements(ps);
         }
         return admin;
+    }
+
+    public String generateJwtToken(Admin admin) throws JWTCreationException {
+        return JwtUtil.generateToken(admin.getAdminEmail());
     }
 }

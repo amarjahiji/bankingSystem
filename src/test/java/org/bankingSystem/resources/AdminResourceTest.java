@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import java.sql.SQLException;
 
-public class LoginResourceTest {
+public class AdminResourceTest {
     @Test
     void login() throws SQLException {
-        Response response = new LoginResource().login("admin@gmail.com", "admin");
+        Response response = new AdminResource().login("admin@gmail.com", "admin");
         System.out.println(response.getEntity());
     }
 
@@ -21,7 +21,7 @@ public class LoginResourceTest {
                 "  \"adminPassword\": \"smith123\"\n" +
                 "  \"adminSecurityClearance\": \"Full\"\n" +
                 "}";
-        Response response = new LoginResource().signup(payload);
+        Response response = new AdminResource().signup(payload);
         System.out.println(response.getEntity());
     }
 }

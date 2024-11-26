@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
-@Path("account/secured")
+@Path("account")
 public class AccountResource extends AbstractResource {
     private final AccountService ACCOUNT_SERVICE = new AccountService();
 
@@ -19,7 +19,7 @@ public class AccountResource extends AbstractResource {
     public Response getAccounts() throws SQLException {
         List<Account> accounts = ACCOUNT_SERVICE.getAccounts();
         if (!accounts.isEmpty()) {
-            return accountToJson(accounts, 200);
+            return accountsToJson(accounts, 200);
         } else {
             return notFound();
         }

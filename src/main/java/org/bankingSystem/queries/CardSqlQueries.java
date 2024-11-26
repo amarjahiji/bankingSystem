@@ -22,33 +22,6 @@ public class CardSqlQueries {
                     "from cards " +
                     "where id = ?";
 
-    public static final String GET_CARDS_CARD_TYPE =
-            "select c.id as card_id, " +
-                    "c.card_number, " +
-                    "c.card_cvv, " +
-                    "ct.card_type_name, " +
-                    "c.card_expiry_date, " +
-                    "c.card_type_id, " +
-                    "c.account_id, " +
-                    "ct.id as card_type_id " +
-                    "from cards c " +
-                    "left join card_types ct " +
-                    "on c.card_type_id = ct.id";
-
-    public static final String GET_CARD_CARD_TYPE_BY_ID =
-            "select c.id as card_id, " +
-                    "c.card_number, " +
-                    "c.card_cvv, " +
-                    "ct.card_type_name, " +
-                    "c.card_expiry_date, " +
-                    "c.card_type_id, " +
-                    "c.account_id, " +
-                    "ct.id as card_type_id " +
-                    "from cards c " +
-                    "left join card_types ct " +
-                    "on c.card_type_id = ct.id " +
-                    "where c.id = ?";
-
     public static final String CREATE_CARD =
             "insert into cards " +
                     "(id, " +

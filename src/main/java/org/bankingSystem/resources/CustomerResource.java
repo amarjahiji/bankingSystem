@@ -138,7 +138,6 @@ public class CustomerResource extends AbstractResource {
         }
     }
 
-
     @Path("/address/update/secured/{id}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
@@ -230,7 +229,6 @@ public class CustomerResource extends AbstractResource {
             return notFound();
         }
     }
-
 
     @Path("/accounts/cards")
     @GET

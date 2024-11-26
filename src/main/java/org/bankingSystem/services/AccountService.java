@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class AccountService extends AbstractService {
+public class AccountService extends CommonService {
     public List<Account> getAccounts() throws SQLException {
         List<Account> accounts = new ArrayList<>();
         Connection connection = null;
@@ -46,7 +46,8 @@ public class AccountService extends AbstractService {
                 return new Account(rs);
             }
         } catch (SQLException e) {
-            throw new SQLException("Failed to retrieve account by id" + accountId + e.getMessage());
+            throw new SQLException("Failed to get customer by id :" + accountId +
+                    e.getMessage());
         } finally {
             closeConnection(connection);
             closeResultSet(rs);

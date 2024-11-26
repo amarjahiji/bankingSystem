@@ -57,9 +57,9 @@ public class CardResource extends AbstractResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateCardById(@PathParam("id") UUID cardId, String payload) throws SQLException {
         Card card = cardFromJson(payload);
-        Card updatedCardModel = CARD_SERVICE.updateCardById(cardId, card);
-        if (updatedCardModel != null) {
-            return cardToJson(updatedCardModel, 200);
+        Card updatedCard = CARD_SERVICE.updateCardById(cardId, card);
+        if (updatedCard != null) {
+            return cardToJson(updatedCard, 200);
         } else {
             return notFound();
         }

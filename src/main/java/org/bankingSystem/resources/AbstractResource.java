@@ -3,9 +3,11 @@ package org.bankingSystem.resources;
 import jakarta.ws.rs.core.Response;
 import org.bankingSystem.model.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import static org.bankingSystem.services.AbstractService.GSON;
+import static org.bankingSystem.services.CommonService.GSON;
 
 public abstract class AbstractResource {
     protected Response countCustomerToJson(CountCustomer countCustomers, int statusCode) {
@@ -28,12 +30,12 @@ public abstract class AbstractResource {
         return GSON.fromJson(payload, Customer.class);
     }
 
-    protected Response accountToJson(List<Account> accounts, int statusCode) {
+    protected Response accountsToJson(List<Account> accounts, int statusCode) {
         return Response.status(statusCode).entity(GSON.toJson(accounts)).build();
     }
 
-    protected Response accountToJson(Account accounts, int statusCode) {
-        return Response.status(statusCode).entity(GSON.toJson(accounts)).build();
+    protected Response accountToJson(Account account, int statusCode) {
+        return Response.status(statusCode).entity(GSON.toJson(account)).build();
     }
 
     protected Response accountNumberToJson(String accountNumber, int statusCode) {
@@ -76,8 +78,11 @@ public abstract class AbstractResource {
         return GSON.fromJson(payload, Transaction.class);
     }
 
-    protected Response adminToJson(Admin admin, int statusCode) {
-        return Response.status(statusCode).entity(GSON.toJson(admin)).build();
+    protected Response adminToJson(Admin admin, String token, int statusCode) {
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("admin: ", admin);
+        responseMap.put("token: ", token);
+        return Response.status(statusCode).entity(GSON.toJson(responseMap)).build();
     }
 
     protected Admin adminFromJson(String payload) {

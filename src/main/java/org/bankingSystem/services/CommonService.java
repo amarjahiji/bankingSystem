@@ -4,9 +4,7 @@ import com.google.gson.Gson;
 
 import java.sql.*;
 
-public class AbstractService {
-
-    public static final Gson GSON = new Gson();
+public class CommonService {
 
     protected void closeStatements(Statement... statements) throws SQLException {
         for (Statement statement : statements) {
@@ -35,4 +33,7 @@ public class AbstractService {
             connection.close();
         }
     }
+
+    public static final Gson GSON = new Gson();
+
 }
