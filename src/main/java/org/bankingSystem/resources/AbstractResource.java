@@ -89,4 +89,15 @@ public abstract class AbstractResource {
         return GSON.fromJson(payload, Admin.class);
     }
 
+    protected Response transfersToJson(List<Transfer> transfers, int statusCode) {
+        return Response.status(statusCode).entity(GSON.toJson(transfers)).build();
+    }
+
+    protected Response transferToJson(Transfer transfer, int statusCode) {
+        return Response.status(statusCode).entity(GSON.toJson(transfer)).build();
+    }
+
+    protected Transfer transferFromJson(String payload) {
+        return GSON.fromJson(payload, Transfer.class);
+    }
 }

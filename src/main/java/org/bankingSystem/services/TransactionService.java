@@ -2,7 +2,9 @@ package org.bankingSystem.services;
 
 import org.bankingSystem.DatabaseConnector;
 import org.bankingSystem.model.Transaction;
+import org.bankingSystem.model.Transfer;
 import org.bankingSystem.queries.TransactionSqlQueries;
+import org.bankingSystem.queries.TransferSqlQueries;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -56,29 +58,55 @@ public class TransactionService extends CommonService {
         return null;
     }
 
-    public Transaction createTransaction(Transaction transactions) throws SQLException {
+    public Transaction createTransaction(Transaction transaction) throws SQLException {
         Connection connection = null;
-        PreparedStatement ps = null;
-        int rowsAffected = 0;
+        PreparedStatement psCheckBalance = null;
+        PreparedStatement psInsert = null;
+        PreparedStatement psUpdateBalance = null;
+        ResultSet rs = null;
         try {
             connection = DatabaseConnector.getConnection();
-            ps = connection.prepareStatement(TransactionSqlQueries.CREATE_TRANSACTION);
-            UUID uuid = UUID.randomUUID();
-            ps.setString(1, uuid.toString());
-            ps.setString(2, transactions.getTransactionType());
-            ps.setFloat(3, transactions.getTransactionAmount());
-            ps.setString(4, transactions.getTransactionDate());
-            ps.setString(5, transactions.getAccountId().toString());
-            rowsAffected = ps.executeUpdate();
-            if (rowsAffected < 1) {
-                throw new SQLException("No rows affected trying to create a transaction");
+            connection.setAutoCommit(false);
+
+            psCheckBalance = connection.prepareStatement(TransactionSqlQueries.CHECK_BALANCE);
+            psCheckBalance.setString(1, transaction.getAccountId().toString());
+            rs = psCheckBalance.executeQuery();
+            if (rs.next()) {
+                double senderBalance = rs.getDouble("account_current_balance");
+                if (senderBalance < transaction.getTransactionAmount() && transaction.getTransactionType().equalsIgnoreCase("Withdraw")) {
+                    throw new SQLException("Insufficient funds for withdrawal");
+                }
+            } else {
+                throw new SQLException("Account not found");
             }
+
+            psInsert = connection.prepareStatement(TransactionSqlQueries.CREATE_TRANSACTION);
+            UUID uuid = UUID.randomUUID();
+            psInsert.setString(1, uuid.toString());
+            psInsert.setString(2, transaction.getTransactionType());
+            psInsert.setFloat(3, transaction.getTransactionAmount());
+            psInsert.setString(4, transaction.getTransactionDate());
+            psInsert.setString(5, transaction.getAccountId().toString());
+            psInsert.setString(6, transaction.getTransactionDescription());
+            psInsert.executeUpdate();
+
+            psUpdateBalance = connection.prepareStatement(TransactionSqlQueries.UPDATE_BALANCE);
+            psUpdateBalance.setDouble(1, transaction.getTransactionAmount());
+            psUpdateBalance.setString(2, transaction.getAccountId().toString());
+            psUpdateBalance.executeUpdate();
+
+
+            connection.commit();
+
         } catch (SQLException e) {
+            if (connection != null) {
+                connection.rollback();
+            }
             throw new SQLException("Error while creating a transaction" + e.getMessage());
         } finally {
             closeConnection(connection);
-            closePreparedStatement(ps);
+            closePreparedStatement(psCheckBalance, psInsert, psUpdateBalance);
         }
-        return transactions;
+        return transaction;
     }
 }

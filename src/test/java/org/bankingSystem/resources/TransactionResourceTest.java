@@ -27,6 +27,7 @@ class TransactionResourceTest {
                 "    \"transactionAmount\": 250.00 ,\n" +
                 "    \"transactionDate\": \"2024-01-10 \",\n" +
                 "    \"accountId\": a8d7a3b5-e29b-41d4-a716-446655440007\n" +
+                "    \"transactionDescription\": Details ...\n" +
                 "}";
     Response response = new TransactionResource().createTransaction(payload);
     System.out.println(response.getEntity());

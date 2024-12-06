@@ -10,6 +10,7 @@ public class Transaction {
     private Float transactionAmount;
     private String transactionDate;
     private UUID accountId;
+    private String transactionDescription;
 
     public Transaction(ResultSet rs) throws SQLException {
         this.transactionId = UUID.fromString(rs.getString("transaction_id"));
@@ -17,6 +18,7 @@ public class Transaction {
         this.transactionAmount = rs.getFloat("transaction_amount");
         this.transactionDate = rs.getString("transaction_date");
         this.accountId = UUID.fromString(rs.getString("account_id"));
+        this.transactionDescription = rs.getString("transaction_description");
     }
 
     public UUID getTransactionId() {
@@ -57,5 +59,12 @@ public class Transaction {
 
     public void setAccountId(UUID accountId) {
         this.accountId = accountId;
+    }
+
+    public String getTransactionDescription() {
+        return transactionDescription;
+    }
+    public void setTransactionDescription(String transactionDescription) {
+        this.transactionDescription = transactionDescription;
     }
 }

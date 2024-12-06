@@ -25,6 +25,17 @@ public class TransactionSqlQueries {
                     "transaction_type, " +
                     "transaction_amount, " +
                     "transaction_date, " +
-                    "account_id) " +
-                    "values (?,?,?,?,?)";
+                    "account_id, " +
+                    "transactionDescription) " +
+                    "values (?,?,?,?,?, ?)";
+
+    public static final String CHECK_BALANCE =
+            "SELECT account_current_balance " +
+                    "FROM accounts " +
+                    "WHERE id = ? ";
+
+    public static final String UPDATE_BALANCE =
+            "UPDATE accounts " +
+                    "SET account_current_balance = account_current_balance - ? " +
+                    "WHERE id = ? ";
 }
